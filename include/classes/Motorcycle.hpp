@@ -7,6 +7,7 @@ class Motorcycle : public Vehicle {
 private:
   int engineCapacity;
   std::string handleBarType;
+  int pricePerDay = 125;
 
 public:
   Motorcycle(std::string brand, std::string model, std::string year,

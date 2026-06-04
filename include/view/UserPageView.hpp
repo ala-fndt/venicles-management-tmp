@@ -27,6 +27,7 @@ public:
   wxTextCtrl *modelInput;
   wxTextCtrl *yearInput;
   wxTextCtrl *colorInput;
+  wxTextCtrl *pricePerDayInput;
 
   wxButton *addVehicleButton;
 

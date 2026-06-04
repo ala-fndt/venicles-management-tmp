@@ -1,8 +1,8 @@
 #ifndef MAINVIEW_HPP
 #define MAINVIEW_HPP
 
-#include "../include/additionalScripts/Logger.hpp"
-#include "../include/database/Database.hpp"
+#include "../additionalScripts/Logger.hpp"
+#include "../database/Database.hpp"
 #include <memory>
 #include <wx/wx.h>
 

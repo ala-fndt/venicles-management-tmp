@@ -26,6 +26,7 @@ void UserPageController::OnAddVehicleClicked(wxCommandEvent &event) {
     std::string model = _view->modelInput->GetValue().Upper().ToStdString();
     std::string year = _view->yearInput->GetValue().ToStdString();
     std::string color = _view->colorInput->GetValue().Upper().ToStdString();
+    std::string pricePerDay = _view->pricePerDayInput->GetValue().ToStdString();
     
     _view->info->SetLabel("");
 
