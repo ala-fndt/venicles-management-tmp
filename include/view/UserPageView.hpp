@@ -1,19 +1,19 @@
 #ifndef USER_PAGE_VIEW_HPP
 #define USER_PAGE_VIEW_HPP
 
-#include "../include/classes/IRefreshable.hpp"
+#include "../classes/IRefreshable.hpp"
 #include <wx/wx.h>
-#include "../include/additionalScripts/Validator.hpp"
-#include "../include/model/VehicleSummary.hpp"
+#include "../additionalScripts/Validator.hpp"
+#include "../model/VehicleSummary.hpp"
 
 class UserPageModel;
 
 class UserPageView : public wxPanel, public IRefreshable {
 private:
   UserPageModel *_model;
+  Validator *_validator;
 public:
   std::string userName;
-  Validator *validator;
   bool isAdmin;
 
   wxStaticText *info;
@@ -27,6 +27,15 @@ public:
   wxTextCtrl *modelInput;
   wxTextCtrl *yearInput;
   wxTextCtrl *colorInput;
+  wxTextCtrl *fuelTypeInput;
+  wxTextCtrl *technicalStatusInput;
+  wxTextCtrl *mileageInput;
+  wxTextCtrl *numberOfSeatsInput;
+  wxTextCtrl *engineCapacityInput;
+  wxTextCtrl *handleBarsTypeInput;
+  wxTextCtrl *maxCargoWeightInput;
+  wxTextCtrl *numberOfAxlesInput;
+  
 
   wxButton *addVehicleButton;
 

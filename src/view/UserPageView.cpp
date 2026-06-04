@@ -1,6 +1,6 @@
-#include "../../src/controller/UserPageView.hpp"
-#include "../include/classes/Session.hpp"
-#include "../../src/controller/UserPageModel.hpp"
+#include "../../include/view/UserPageView.hpp"
+#include "../../include/classes/Session.hpp"
+#include "../../include/model/UserPageModel.hpp"
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
 #include <wx/valtext.h>

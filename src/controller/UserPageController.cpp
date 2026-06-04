@@ -1,6 +1,6 @@
-#include "UserPageController.hpp"
-#include "UserPageView.hpp"
-#include "UserPageModel.hpp"
+#include "../../include/controller/UserPageController.hpp"
+#include "../../include/view/UserPageView.hpp"
+#include "../../include/model/UserPageModel.hpp"
 #include "../../include/classes/Session.hpp"
 #include <ctime>
 

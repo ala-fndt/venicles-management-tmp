@@ -29,7 +29,15 @@ public:
                   const std::string& brand, 
                   const std::string& model, 
                   const std::string& year, 
-                  const std::string& color);
+                  const std::string& color,
+                  const std::string& fuelType, 
+                  const std::string& technicalStatus, 
+                  int mileage, 
+                  int numberOfSeats, 
+                  int engineCapacity, 
+                  const std::string& handleBarsType, 
+                  int maxCargoWeight, 
+                  int numberOfAxles);
 };
 
 #endif // !USER_PAGE_MODEL_HPP

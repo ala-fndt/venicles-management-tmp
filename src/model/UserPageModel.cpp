@@ -1,8 +1,9 @@
-#include "../controller/UserPageModel.hpp"
+#include "../../include/model/UserPageModel.hpp"
 
 UserPageModel::~UserPageModel() = default;
 
-UserPageModel::UserPageModel(Database *db, Logger *logger) : _db(db), _logger(logger) {}
+UserPageModel::UserPageModel(Database *db, Logger *logger)
+    : database(db), logger(logger), router(nullptr) {}
 
 bool UserPageModel::addVehicle(const std::string& vin, const std::string& brand, const std::string& model, 
                                 const std::string& year, const std::string& color, const std::string& fuelType, 
@@ -26,8 +27,8 @@ bool UserPageModel::addVehicle(const std::string& vin, const std::string& brand,
                       + (cargo > 0 ? std::to_string(cargo) : "NULL") + ", "
                       + (axles > 0 ? std::to_string(axles) : "NULL") + ");";
 
-    if (_db) {
-        _db->executeQuery(sql);
+    if (database) {
+        database->executeQuery(sql);
         // W tej architekturze błędy są logowane przez klasę Database.
         return true; 
     }
