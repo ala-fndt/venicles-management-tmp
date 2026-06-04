@@ -1,12 +1,12 @@
-#include "../include/view/UserPageView.hpp"
+#include "../../src/controller/UserPageView.hpp"
 #include "../include/classes/Session.hpp"
-#include "../include/model/UserPageModel.hpp"
+#include "../../src/controller/UserPageModel.hpp"
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
 #include <wx/valtext.h>
 
 UserPageView::UserPageView(wxWindow *window, Validator *validator, UserPageModel *model)
-    : wxPanel(window), validator(validator), _model(model)
+    : wxPanel(window), _validator(validator), _model(model)
 {
     SetBackgroundColour(wxColour(17, 24, 39));
     SetForegroundColour(wxColour(229, 231, 235));
@@ -285,6 +285,67 @@ UserPageView::UserPageView(wxWindow *window, Validator *validator, UserPageModel
     colorInput->SetForegroundColour(
         wxColour(243, 244, 246));
 
+    wxStaticText *fuelLabel = new wxStaticText(adminPanel, wxID_ANY, "Paliwo:");
+    fuelLabel->SetForegroundColour(wxColour(156, 163, 175));
+    fuelLabel->SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
+    fuelTypeInput = new wxTextCtrl(adminPanel, wxID_ANY);
+    fuelTypeInput->SetBackgroundColour(wxColour(17, 24, 39));
+    fuelTypeInput->SetForegroundColour(wxColour(243, 244, 246));
+
+    wxStaticText *statusLabel = new wxStaticText(adminPanel, wxID_ANY, "Stan:");
+    statusLabel->SetForegroundColour(wxColour(156, 163, 175));
+    statusLabel->SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
+    technicalStatusInput = new wxTextCtrl(adminPanel, wxID_ANY);
+    technicalStatusInput->SetBackgroundColour(wxColour(17, 24, 39));
+    technicalStatusInput->SetForegroundColour(wxColour(243, 244, 246));
+
+    wxStaticText *mileageLabel = new wxStaticText(adminPanel, wxID_ANY, "Przebieg:");
+    mileageLabel->SetForegroundColour(wxColour(156, 163, 175));
+    mileageLabel->SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
+    mileageInput = new wxTextCtrl(adminPanel, wxID_ANY);
+    mileageInput->SetValidator(wxTextValidator(wxFILTER_DIGITS));
+    mileageInput->SetBackgroundColour(wxColour(17, 24, 39));
+    mileageInput->SetForegroundColour(wxColour(243, 244, 246));
+
+    wxStaticText *seatsLabel = new wxStaticText(adminPanel, wxID_ANY, "Miejsca:");
+    seatsLabel->SetForegroundColour(wxColour(156, 163, 175));
+    seatsLabel->SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
+    numberOfSeatsInput = new wxTextCtrl(adminPanel, wxID_ANY);
+    numberOfSeatsInput->SetValidator(wxTextValidator(wxFILTER_DIGITS));
+    numberOfSeatsInput->SetBackgroundColour(wxColour(17, 24, 39));
+    numberOfSeatsInput->SetForegroundColour(wxColour(243, 244, 246));
+
+    wxStaticText *engineLabel = new wxStaticText(adminPanel, wxID_ANY, "Pojemnosc:");
+    engineLabel->SetForegroundColour(wxColour(156, 163, 175));
+    engineLabel->SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
+    engineCapacityInput = new wxTextCtrl(adminPanel, wxID_ANY);
+    engineCapacityInput->SetValidator(wxTextValidator(wxFILTER_DIGITS));
+    engineCapacityInput->SetBackgroundColour(wxColour(17, 24, 39));
+    engineCapacityInput->SetForegroundColour(wxColour(243, 244, 246));
+
+    wxStaticText *handleLabel = new wxStaticText(adminPanel, wxID_ANY, "Kierownica:");
+    handleLabel->SetForegroundColour(wxColour(156, 163, 175));
+    handleLabel->SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
+    handleBarsTypeInput = new wxTextCtrl(adminPanel, wxID_ANY);
+    handleBarsTypeInput->SetBackgroundColour(wxColour(17, 24, 39));
+    handleBarsTypeInput->SetForegroundColour(wxColour(243, 244, 246));
+
+    wxStaticText *cargoLabel = new wxStaticText(adminPanel, wxID_ANY, "Ladunek:");
+    cargoLabel->SetForegroundColour(wxColour(156, 163, 175));
+    cargoLabel->SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
+    maxCargoWeightInput = new wxTextCtrl(adminPanel, wxID_ANY);
+    maxCargoWeightInput->SetValidator(wxTextValidator(wxFILTER_DIGITS));
+    maxCargoWeightInput->SetBackgroundColour(wxColour(17, 24, 39));
+    maxCargoWeightInput->SetForegroundColour(wxColour(243, 244, 246));
+
+    wxStaticText *axlesLabel = new wxStaticText(adminPanel, wxID_ANY, "Osie:");
+    axlesLabel->SetForegroundColour(wxColour(156, 163, 175));
+    axlesLabel->SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
+    numberOfAxlesInput = new wxTextCtrl(adminPanel, wxID_ANY);
+    numberOfAxlesInput->SetValidator(wxTextValidator(wxFILTER_DIGITS));
+    numberOfAxlesInput->SetBackgroundColour(wxColour(17, 24, 39));
+    numberOfAxlesInput->SetForegroundColour(wxColour(243, 244, 246));
+
     formSizer->Add(vinLabel, 0,
                    wxALIGN_CENTER_VERTICAL |
                        wxRIGHT,
@@ -324,6 +385,30 @@ UserPageView::UserPageView(wxWindow *window, Validator *validator, UserPageModel
 
     formSizer->Add(colorInput, 1,
                    wxEXPAND);
+
+    formSizer->Add(fuelLabel, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 10);
+    formSizer->Add(fuelTypeInput, 1, wxEXPAND);
+
+    formSizer->Add(statusLabel, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 10);
+    formSizer->Add(technicalStatusInput, 1, wxEXPAND);
+
+    formSizer->Add(mileageLabel, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 10);
+    formSizer->Add(mileageInput, 1, wxEXPAND);
+
+    formSizer->Add(seatsLabel, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 10);
+    formSizer->Add(numberOfSeatsInput, 1, wxEXPAND);
+
+    formSizer->Add(engineLabel, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 10);
+    formSizer->Add(engineCapacityInput, 1, wxEXPAND);
+
+    formSizer->Add(handleLabel, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 10);
+    formSizer->Add(handleBarsTypeInput, 1, wxEXPAND);
+
+    formSizer->Add(cargoLabel, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 10);
+    formSizer->Add(maxCargoWeightInput, 1, wxEXPAND);
+
+    formSizer->Add(axlesLabel, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 10);
+    formSizer->Add(numberOfAxlesInput, 1, wxEXPAND);
 
     adminSizer->Add(formSizer, 1,
                     wxEXPAND |
@@ -443,9 +528,13 @@ void UserPageView::refresh()
 
 void UserPageView::clearInputs()
 {
-    if (validator)
+    if (_validator)
     {
-        validator->clearFields({vinInput, brandInput, modelInput, yearInput, colorInput});
+        _validator->clearFields(std::vector<wxTextCtrl*>{
+            vinInput, brandInput, modelInput, yearInput, colorInput,
+            fuelTypeInput, technicalStatusInput, mileageInput, numberOfSeatsInput,
+            engineCapacityInput, handleBarsTypeInput, maxCargoWeightInput, numberOfAxlesInput
+        });
     }
     info->SetLabel("");
 }

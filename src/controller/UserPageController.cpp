@@ -1,4 +1,6 @@
-#include "../../include/controller/UserPageController.hpp"
+#include "UserPageController.hpp"
+#include "UserPageView.hpp"
+#include "UserPageModel.hpp"
 #include "../../include/classes/Session.hpp"
 #include <ctime>
 
@@ -21,18 +23,30 @@ void UserPageController::OnBackButtonClick(wxCommandEvent &event) {
 }
 
 void UserPageController::OnAddVehicleClicked(wxCommandEvent &event) {
+    (void)event; // Fix unused parameter warning
     std::string vin = _view->vinInput->GetValue().Upper().ToStdString();
     std::string brand = _view->brandInput->GetValue().Upper().ToStdString();
     std::string model = _view->modelInput->GetValue().Upper().ToStdString();
     std::string year = _view->yearInput->GetValue().ToStdString();
     std::string color = _view->colorInput->GetValue().Upper().ToStdString();
+    std::string fuelType = _view->fuelTypeInput->GetValue().ToStdString();
+    std::string status = _view->technicalStatusInput->GetValue().ToStdString();
+    std::string mileage = _view->mileageInput->GetValue().ToStdString();
+    std::string seats = _view->numberOfSeatsInput->GetValue().ToStdString();
+    std::string engine = _view->engineCapacityInput->GetValue().ToStdString();
+    std::string handle = _view->handleBarsTypeInput->GetValue().ToStdString();
+    std::string cargo = _view->maxCargoWeightInput->GetValue().ToStdString();
+    std::string axles = _view->numberOfAxlesInput->GetValue().ToStdString();
     
     _view->info->SetLabel("");
 
     if (_validator->checkEmpty(vin) || 
         _validator->checkEmpty(brand) || 
         _validator->checkEmpty(model) ||
-        _validator->checkEmpty(year)) {
+        _validator->checkEmpty(year) ||
+        _validator->checkEmpty(fuelType) ||
+        _validator->checkEmpty(status) ||
+        _validator->checkEmpty(mileage)) {
         
         _view->info->SetLabel("Blad: Wszystkie pola musza byc wypelnione!");
         _view->info->SetForegroundColour(wxColour(248, 113, 113));
@@ -40,7 +54,7 @@ void UserPageController::OnAddVehicleClicked(wxCommandEvent &event) {
         return;
     }
 
-    // Walidacja zakresu roku
+    // Walidacja zakresu roku (przywrócona)
     int yearInt = std::stoi(year);
     std::time_t t = std::time(nullptr);
     std::tm* now = std::localtime(&t);
@@ -53,7 +67,11 @@ void UserPageController::OnAddVehicleClicked(wxCommandEvent &event) {
         _view->Layout();
         return;
     }
-    if (!_model->addVehicle(vin, brand, model, year, color)) {
+
+    if (!_model->addVehicle(vin, brand, model, year, color, fuelType, status, 
+                           std::stoi(mileage), seats.empty() ? 0 : std::stoi(seats), 
+                           engine.empty() ? 0 : std::stoi(engine), handle, 
+                           cargo.empty() ? 0 : std::stoi(cargo), axles.empty() ? 0 : std::stoi(axles))) {
         _view->info->SetLabel("Blad: Nie udalo sie dodac pojazdu do bazy danych!");
         _view->info->SetForegroundColour(wxColour(248, 113, 113));
         _view->Layout();
