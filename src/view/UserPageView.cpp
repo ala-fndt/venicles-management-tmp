@@ -1,6 +1,5 @@
 #include "../../include/view/UserPageView.hpp"
 #include "../include/classes/Session.hpp"
-#include "../include/model/UserPageModel.hpp"
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
 #include <wx/valtext.h>
@@ -257,11 +256,58 @@ UserPageView::UserPageView(wxWindow *window, Validator *validator, UserPageModel
 
 void UserPageView::refresh()
 {
-    // Czyste odświeżenie geometrii kontenerów
+    auto &session = Session::getInstance();
+
+    info->SetLabel("");
+
+    labelTitle->SetLabel(
+        session.getName() +
+        " " +
+        session.getSurname());
+
+    if (session.getAdmin())
+    {
+        adminPanel->Show();
+    }
+    else
+    {
+        adminPanel->Hide();
+    }
+
+    historyListSizer->Clear(true);
+    std::vector<VehicleSummary> history = _model->getRentalHistory();
+
+    if (history.empty())
+    {
+        wxStaticText *emptyLabel = new wxStaticText(historyPanel, wxID_ANY, "Brak historii wynajmu.");
+        emptyLabel->SetForegroundColour(wxColour(156, 163, 175));
+        historyListSizer->Add(emptyLabel, 0, wxALIGN_CENTER | wxBOTTOM, 20);
+    }
+    else
+    {
+        for (const auto &v : history)
+        {
+            wxPanel *row = new wxPanel(historyPanel, wxID_ANY);
+            row->SetBackgroundColour(wxColour(55, 65, 81));
+            wxBoxSizer *rowSizer = new wxBoxSizer(wxVERTICAL);
+
+            wxStaticText *txt = new wxStaticText(row, wxID_ANY,
+                                                 wxString::Format("%s %s (%s) - %s", 
+                                                     v.brand.c_str(), 
+                                                     v.model.c_str(), 
+                                                     v.year.c_str(), 
+                                                     v.color.c_str()));
+            txt->SetForegroundColour(wxColour(229, 231, 235));
+            rowSizer->Add(txt, 0, wxALL, 10);
+
+            row->SetSizer(rowSizer);
+            historyListSizer->Add(row, 0, wxEXPAND | wxBOTTOM, 10);
+        }
+    }
+
     Layout();
 }
 
-// Nowa, bezpieczna metoda wywoływana przez Kontroler dostarczająca surowe dane
 void UserPageView::updateUserData(const std::string& fullName, bool isAdmin, const std::vector<VehicleSummary>& history)
 {
     if (!labelTitle || !historyListSizer || !adminPanel || !historyPanel)
@@ -272,7 +318,6 @@ void UserPageView::updateUserData(const std::string& fullName, bool isAdmin, con
     info->SetLabel("");
     labelTitle->SetLabel(wxString::FromUTF8(fullName.c_str()));
 
-    // Kontroler decyduje, czy pokazujemy panel
     if (isAdmin)
     {
         adminPanel->Show();
@@ -282,7 +327,6 @@ void UserPageView::updateUserData(const std::string& fullName, bool isAdmin, con
         adminPanel->Hide();
     }
 
-    // Czyszczenie starej listy historii
     historyListSizer->Clear(true);
 
     if (history.empty())
@@ -299,7 +343,6 @@ void UserPageView::updateUserData(const std::string& fullName, bool isAdmin, con
             row->SetBackgroundColour(wxColour(55, 65, 81));
             wxBoxSizer *rowSizer = new wxBoxSizer(wxVERTICAL);
 
-            // Poprawiono formatowanie: dodano rzutowanie .c_str() dla obiektów std::string
             wxStaticText *txt = new wxStaticText(row, wxID_ANY,
                 wxString::Format("%s %s (%s) - %s", 
                     v.brand.c_str(), 
@@ -315,7 +358,6 @@ void UserPageView::updateUserData(const std::string& fullName, bool isAdmin, con
         }
     }
 
-    // Wymuszenie przeliczenia pozycji elementów po zmianach stanów Show/Hide
     Layout();
 }
 
