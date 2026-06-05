@@ -1,5 +1,11 @@
 #include "../include/view/VehicleListPanel.hpp"
 
+namespace {
+wxString toWx(const std::string &text) {
+  return wxString::From8BitData(text.c_str());
+}
+} // namespace
+
 VehicleListPanel::VehicleListPanel(wxWindow *parent,
                    const std::vector<VehicleSummary> &vehicles)
     : wxPanel(parent) {
@@ -33,18 +39,20 @@ VehicleListPanel::VehicleListPanel(wxWindow *parent,
     vehicleItem->SetBackgroundColour(wxColour(55, 65, 81));
 
     wxBoxSizer *itemSizer = new wxBoxSizer(wxVERTICAL);
-    wxStaticText *itemTitle = new wxStaticText(
-        vehicleItem, wxID_ANY,
-        wxString::Format("Auto %d: %s %s", static_cast<int>(i + 1),
-                         vehicles[i].brand, vehicles[i].model));
+    wxString itemTitleText =
+      "Auto " + wxString::Format("%d", static_cast<int>(i + 1)) + ": " +
+      toWx(vehicles[i].brand) + " " +
+      toWx(vehicles[i].model);
+    wxStaticText *itemTitle =
+      new wxStaticText(vehicleItem, wxID_ANY, itemTitleText);
     itemTitle->SetForegroundColour(wxColour(255, 255, 255));
     itemTitle->SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
                               wxFONTWEIGHT_BOLD));
 
-    wxStaticText *itemSubtitle = new wxStaticText(
-        vehicleItem, wxID_ANY,
-        wxString::Format("Rok: %s | Kolor: %s", vehicles[i].year,
-                         vehicles[i].color));
+    wxString itemSubtitleText = "Rok: " + toWx(vehicles[i].year) +
+                  " | Kolor: " + toWx(vehicles[i].color);
+    wxStaticText *itemSubtitle =
+      new wxStaticText(vehicleItem, wxID_ANY, itemSubtitleText);
     itemSubtitle->SetForegroundColour(wxColour(156, 163, 175));
 
     itemSizer->Add(itemTitle, 0, wxALL, 8);

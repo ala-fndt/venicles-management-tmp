@@ -9,7 +9,7 @@ int HomeModel::getVehicleCount() {
 
 std::vector<VehicleSummary> HomeModel::getVehicles() {
   return getVehiclesByQuery(
-      "SELECT brand, model, year, color FROM vehicle ORDER BY id;");
+  "SELECT id, brand, model, year, color FROM vehicle ORDER BY id;");
 }
 
 std::vector<VehicleSummary>

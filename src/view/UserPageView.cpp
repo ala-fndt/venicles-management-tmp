@@ -5,6 +5,13 @@
 #include <wx/textctrl.h>
 #include <wx/valtext.h>
 
+namespace {
+wxString toWx(const std::string &text)
+{
+    return wxString::From8BitData(text.c_str());
+}
+}
+
 UserPageView::UserPageView(wxWindow *window, Validator *validator, UserPageModel *model)
     : wxPanel(window), validator(validator), _model(model)
 {
@@ -428,8 +435,11 @@ void UserPageView::refresh()
             row->SetBackgroundColour(wxColour(55, 65, 81));
             wxBoxSizer *rowSizer = new wxBoxSizer(wxVERTICAL);
 
-            wxStaticText *txt = new wxStaticText(row, wxID_ANY,
-                                                 wxString::Format("%s %s (%s) - %s", v.brand, v.model, v.year, v.color));
+            wxString historyText = toWx(v.brand) + " " +
+                                   toWx(v.model) + " (" +
+                                   toWx(v.year) + ") - " +
+                                   toWx(v.color);
+            wxStaticText *txt = new wxStaticText(row, wxID_ANY, historyText);
             txt->SetForegroundColour(wxColour(229, 231, 235));
             rowSizer->Add(txt, 0, wxALL, 10);
 
