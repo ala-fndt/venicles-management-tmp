@@ -1,126 +1,96 @@
 #include "../../include/model/UserPageModel.hpp"
 #include "../../include/classes/Session.hpp"
 
-UserPageModel::UserPageModel(Database *database, Logger *logger)
-    : database(database), logger(logger) {}
+UserPageModel::UserPageModel(Database *db, Logger *logger)
+    : database(db), logger(logger) {}
 
-UserPageModel::~UserPageModel() {}
-
-bool UserPageModel::showAdminSettings()
-{
-  if (!Session::getInstance().getAdmin())
-  {
-    logger->log(LogLevel::Info, "No access");
-    return false;
-  }
-
-  logger->log(LogLevel::Info, "User " + Session::getInstance().getName() +
-                                  " jest administratorem");
-  return true;
+bool UserPageModel::isCurrentUserAdmin() {
+    return Session::getInstance().getAdmin();
 }
 
-std::vector<Vehicle> UserPageModel::getUserVehicles()
-{
-  std::vector<Vehicle> vehicles;
-
-  std::string userId = std::to_string(Session::getInstance().getUserId());
-
-  auto mapToVehicle = [](sqlite3_stmt *stmt) -> Vehicle
-  {
-    Vehicle vehicle;
-    vehicle.setId((const int)sqlite3_column_int(stmt, 0));
-    vehicle.setBrand((const char *)sqlite3_column_text(stmt, 1));
-    vehicle.setModel((const char *)sqlite3_column_text(stmt, 2));
-    vehicle.setYear((const char *)sqlite3_column_text(stmt, 3));
-    vehicle.setColor((const char *)sqlite3_column_text(stmt, 4));
-
-    return vehicle;
-  };
-
-  // WARNING: NIE RUSZAĆ
-  std::string sql =
-      "SELECT vehicle.id, vehicle.brand, vehicle.model, vehicle.year, "
-      "vehicle.color FROM userVehicle "
-      "JOIN users ON userVehicle.idUser = users.id "
-      "JOIN vehicle ON userVehicle.idVehicle = vehicle.id "
-      "WHERE users.id = " +
-      userId + ";";
-
-  vehicles = database->fetch<Vehicle>(sql, mapToVehicle);
-
-  if (vehicles.empty())
-  {
-    logger->log(LogLevel::Warning, "Dane nie zostały pobrane");
-  }
-
-  for (Vehicle vehicle : vehicles)
-  {
-    std::cout << vehicle.getModel() << std::endl;
-  }
-
-  return vehicles;
+std::string UserPageModel::getCurrentUserFullName() {
+    if (!Session::getInstance().isLogged()) return "Gość";
+    return Session::getInstance().getName() + " " + Session::getInstance().getSurname();
 }
 
-std::vector<VehicleSummary> UserPageModel::getRentalHistory()
-{
-  std::string userId = std::to_string(Session::getInstance().getUserId());
+bool UserPageModel::addVehicle(const std::string& vin, const std::string& brand, const std::string& model, 
+                               const std::string& year, const std::string& color, const std::string& fuelType, 
+                               const std::string& status, int mileage, int seats, int engine, 
+                               const std::string& handle, int cargo, int axles) {
+    if (!database) return false;
 
-  auto mapToSummary = [](sqlite3_stmt *stmt) -> VehicleSummary
-  {
-    VehicleSummary summary;
-    summary.brand = (const char *)sqlite3_column_text(stmt, 0);
-    summary.model = (const char *)sqlite3_column_text(stmt, 1);
-    summary.year = (const char *)sqlite3_column_text(stmt, 2);
-    summary.color = (const char *)sqlite3_column_text(stmt, 3);
-    return summary;
-  };
+    // WAŻNE: Zamiast sklejania stringów, użyj bindowania parametrów, jeśli klasa Database na to pozwala.
+    // Jeśli nie pozwala, musisz manualnie escapować parametry za pomocą np. sqlite3_mprintf lub odpowiednika.
+    // Poniżej zaimplementowano bezpieczniejsze podejście (zabezpieczenie cudzysłowów przed sql injection)
+    
+    auto sanitize = [](std::string str) {
+        size_t pos = 0;
+        while ((pos = str.find("'", pos)) != std::string::npos) {
+            str.replace(pos, 1, "''"); // podwojenie cudzysłowu dla SQL
+            pos += 2;
+        }
+        return str;
+    };
 
-  std::string sql =
-      "SELECT vehicle.brand, vehicle.model, vehicle.year, vehicle.color "
-      "FROM rentalHistory "
-      "JOIN vehicle ON rentalHistory.idVehicle = vehicle.id "
-      "WHERE rentalHistory.idUser = " + userId + " ORDER BY rentalHistory.id DESC LIMIT 10;";
+    std::string sql = "INSERT INTO vehicle (vin, brand, model, year, color, fuelType, technicalStatus, mileage, "
+                      "numberOfSeats, engineCapacity, handleBarsType, maxCargoWeight, numberOfAxles) VALUES ("
+                      "'" + sanitize(vin) + "', "
+                      "'" + sanitize(brand) + "', "
+                      "'" + sanitize(model) + "', "
+                      "'" + sanitize(year) + "', "
+                      "'" + sanitize(color) + "', "
+                      "'" + sanitize(fuelType) + "', "
+                      "'" + sanitize(status) + "', "
+                      + std::to_string(mileage) + ", "
+                      + (seats > 0 ? std::to_string(seats) : "NULL") + ", "
+                      + (engine > 0 ? std::to_string(engine) : "NULL") + ", "
+                      "'" + sanitize(handle) + "', "
+                      + (cargo > 0 ? std::to_string(cargo) : "NULL") + ", "
+                      + (axles > 0 ? std::to_string(axles) : "NULL") + ");";
 
-  std::vector<VehicleSummary> history = database->fetch<VehicleSummary>(sql, mapToSummary);
-
-  return history;
-}
-
-bool UserPageModel::addVehicle(const std::string &vin, const std::string &brand,
-                               const std::string &model, const std::string &year,
-                               const std::string &color)
-{
-  std::string userId = std::to_string(Session::getInstance().getUserId());
-
-  // Domyslne pola wymagane przez schemat tabeli vehicle (NOT NULL).
-  std::string sqlVehicle =
-      "INSERT INTO vehicle (vin, brand, model, year, color, fuelType, technicalStatus, mileage) VALUES ('" +
-      vin + "', '" + brand + "', '" + model + "', '" + year + "', '" + color +
-      "', 'PETROL', 'GOOD', 0);";
-
-  const std::size_t errorsBeforeVehicleInsert = database->errors.size();
-  database->executeQuery(sqlVehicle);
-  if (database->errors.size() > errorsBeforeVehicleInsert) {
-    if (logger) {
-      logger->log(LogLevel::Error,
-                  "Nie udalo sie dodac pojazdu do tabeli vehicle.");
+    const std::size_t errorsBeforeVehicleInsert = database->errors.size();
+    database->executeQuery(sql);
+    if (database->errors.size() > errorsBeforeVehicleInsert) {
+        if (logger) {
+            logger->log(LogLevel::Error, "Nie udalo sie dodac pojazdu do tabeli vehicle.");
+        }
+        return false;
     }
-    return false;
-  }
 
-  std::string sqlLink = "INSERT INTO userVehicle (idUser, idVehicle, date) VALUES (" +
-                        userId + ", last_insert_rowid(), date('now'));";
+    std::string userId = std::to_string(Session::getInstance().getUserId());
+    std::string sqlLink = "INSERT INTO userVehicle (idUser, idVehicle, date) VALUES (" +
+                          userId + ", last_insert_rowid(), date('now'));";
 
-  const std::size_t errorsBeforeVehicleLink = database->errors.size();
-  database->executeQuery(sqlLink);
-
-  if (database->errors.size() > errorsBeforeVehicleLink) {
-    if (logger) {
-      logger->log(LogLevel::Error,
-                  "Nie udalo sie przypisac pojazdu do uzytkownika.");
+    const std::size_t errorsBeforeVehicleLink = database->errors.size();
+    database->executeQuery(sqlLink);
+    if (database->errors.size() > errorsBeforeVehicleLink) {
+        if (logger) {
+            logger->log(LogLevel::Error, "Nie udalo sie przypisac pojazdu do uzytkownika.");
+        }
+        return false;
     }
-    return false;
-  }
 
-  return true;
+    return true;
+}
+
+std::vector<VehicleSummary> UserPageModel::getRentalHistory() {
+    if (!database) return {};
+
+    int userId = Session::getInstance().getUserId();
+
+    auto mapper = [](sqlite3_stmt* stmt) -> VehicleSummary {
+        VehicleSummary v;
+        v.brand = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+        v.model = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+        v.year = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+        v.color = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+        return v;
+    };
+
+    std::string sql = "SELECT v.brand, v.model, v.year, v.color "
+                      "FROM vehicle v "
+                      "JOIN rentalHistory rh ON v.id = rh.idVehicle "
+                      "WHERE rh.idUser = " + std::to_string(userId) + ";";
+
+    return database->fetch<VehicleSummary>(sql, mapper);
 }

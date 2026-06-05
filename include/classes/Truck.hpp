@@ -7,6 +7,8 @@ class Truck : public Vehicle {
 private:
   int maxCargoWeight;
   int numberOfAxles;
+  int pricePerDay = 450;
+
 
 public:
   Truck(std::string brand, std::string model, std::string year,

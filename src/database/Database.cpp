@@ -49,7 +49,8 @@ void Database::initDatabase() {
       "surname        TEXT              NOT NULL, "
       "email          TEXT    UNIQUE    NOT NULL, "
       "password       TEXT              NOT NULL, "
-      "isAdmin        BOOL              NOT NULL);",
+      "isAdmin        BOOL              NOT NULL, "
+      "accountBalance INTEGER           NOT NULL);",
 
       "CREATE TABLE IF NOT EXISTS vehicle("
       "id INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -61,6 +62,7 @@ void Database::initDatabase() {
       "fuelType       TEXT            NOT NULL, "
       "technicalStatus TEXT           NOT NULL, "
       "mileage        INTEGER         NOT NULL, "
+      "pricePerDay    INTEGER         NOT NULL, "
 
       // INFO: specyfikacja dla klas dziedziczacych
       "numberOfSeats  INTEGER,"
@@ -86,38 +88,38 @@ void Database::initDatabase() {
 
   // INFO: default isertions on database init
   insertions = {
-      "INSERT OR IGNORE INTO users (name, surname, email, password, isAdmin) "
-      "VALUES('admin', 'admin', 'admin@example.com', '123', 1);",
+      "INSERT OR IGNORE INTO users (name, surname, email, password, isAdmin, accountBalance) "
+      "VALUES('admin', 'admin', 'admin@example.com', '123', 1, 99999999);",
 
-      "INSERT OR IGNORE INTO users (name, surname, email, password, isAdmin) "
+      "INSERT OR IGNORE INTO users (name, surname, email, password, isAdmin, accountBalance) "
 
-      "VALUES('Jan', 'Kowalski', 'JanK@example.com', '123', 0);",
+      "VALUES('Jan', 'Kowalski', 'JanK@example.com', '123', 0, 0);",
 
       "INSERT OR IGNORE INTO vehicle (brand, vin, model, year, color, "
-      "fuelType, technicalStatus, mileage, numberOfSeats) "
+      "fuelType, technicalStatus, mileage, pricePerDay, numberOfSeats) "
       "VALUES('Toyota', 'JTDBR32E720054781' ,'Yaris', '2006', 'RED', "
-      "'GAS', 'GOOD', 4000, 2);",
+      "'GAS', 'Good', 4000, 170, 2);",
 
       "INSERT OR IGNORE INTO vehicle (brand, vin, model, year, color, "
-      "fuelType, technicalStatus, mileage, numberOfSeats) "
+      "fuelType, technicalStatus, mileage, pricePerDay, numberOfSeats) "
       "VALUES('BMW', 'WBA3A5C57DF357921' ,'x5', '2007', 'WHITE', 'DIESEL', "
-      "'Good', 2000, 4);",
+      "'Good', 2000, 170, 4);",
 
       "INSERT OR IGNORE INTO vehicle (brand, vin, model, year, color, "
-      "fuelType, technicalStatus, mileage, numberOfSeats) "
+      "fuelType, technicalStatus, mileage, pricePerDay, numberOfSeats) "
       "VALUES('BMW', 'WBA3A5C57DF357921' ,'x5', '2007', 'WHITE', 'DIESEL', "
-      "'Good', 2000, 4);",
+      "'Good', 2000, 170, 4);",
 
       "INSERT INTO vehicle (vin, brand, model, year, color,fuelType, "
-      "technicalStatus, mileage,handleBarsType, engineCapacity) VALUES "
+      "technicalStatus, mileage, pricePerDay, handleBarsType, engineCapacity) VALUES "
       "('JH2SC59057M123456','Honda','CBR600RR','2021','Red','Petrol','Valid', "
-      "18500,'Clip-on',599);"
+      "18500, 125, 'Clip-on',599);",
 
       "INSERT INTO vehicle (vin, brand, model, year, color,fuelType, "
-      "technicalStatus, mileage,numberOfSeats, engineCapacity,maxCargoWeight, "
+      "technicalStatus, mileage, pricePerDay, numberOfSeats, engineCapacity, maxCargoWeight, "
       "numberOfAxles) VALUES "
       "('WDB9340321L987654','Mercedes-Benz','Actros','2019','White','Diesel','"
-      "Valid',420000,2,12809,18000,3);"
+      "Valid', 420000, 450, 2, 12809, 18000, 3);",
 
       "INSERT OR IGNORE INTO userVehicle (idUser, idVehicle, date) "
       "VALUES(1, 1, '00-00-0000');",
