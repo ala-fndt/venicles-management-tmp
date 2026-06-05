@@ -59,35 +59,42 @@ void UserPageController::OnAddVehicleClicked(wxCommandEvent &event) {
     }
 
     try {
-        int yearInt = std::stoi(year);
-        std::time_t t = std::time(nullptr);
-        std::tm* now = std::localtime(&t);
-        int currentYear = now->tm_year + 1900;
+    int yearInt = std::stoi(year);
+    std::time_t t = std::time(nullptr);
+    std::tm* now = std::localtime(&t);
+    int currentYear = now->tm_year + 1900;
 
-        if (yearInt < 1885 || yearInt > currentYear) {
-            throw std::out_of_range("Rok poza zakresem");
-        }
-
-        if (!_model->addVehicle(vin, brand, model, year, color, fuelType, status, 
-                               std::stoi(mileage), seats.empty() ? 0 : std::stoi(seats), 
-                               engine.empty() ? 0 : std::stoi(engine), handle, 
-                               cargo.empty() ? 0 : std::stoi(cargo), axles.empty() ? 0 : std::stoi(axles))) {
-            _view->info->SetLabel("Blad: Nie udalo sie dodac pojazdu!");
-            _view->info->SetForegroundColour(wxColour(248, 113, 113));
-        } else {
-            _view->clearInputs();
-            _view->updateUserData(
-                _model->getCurrentUserFullName(),
-                _model->isCurrentUserAdmin(),
-                _model->getRentalHistory()
-            );
-
-            _view->info->SetLabel("Sukces: Pojazd zostal dodany!");
-            _view->info->SetForegroundColour(wxColour(52, 211, 153));
-        }
-    } catch (...) {
-        _view->info->SetLabel("Blad: Nieprawidlowe dane liczbowe!");
+    if (yearInt < 1885 || yearInt > currentYear) {
+        _view->info->SetLabel("Blad: Rok poza zakresem (1885 - " + std::to_string(currentYear) + ")!");
         _view->info->SetForegroundColour(wxColour(248, 113, 113));
+        return; 
     }
+
+    int mileageInt = std::stoi(mileage);
+    int seatsInt   = seats.empty()  ? 0 : std::stoi(seats);
+    int engineInt  = engine.empty() ? 0 : std::stoi(engine);
+    int cargoInt   = cargo.empty()  ? 0 : std::stoi(cargo);
+    int axlesInt   = axles.empty()  ? 0 : std::stoi(axles);
+    if (!_model->addVehicle(vin, brand, model, year, color, fuelType, status, 
+                            mileageInt, seatsInt, engineInt, handle, cargoInt, axlesInt)) {
+        
+        _view->info->SetLabel("Blad: Nie udalo sie dodac pojazdu!");
+        _view->info->SetForegroundColour(wxColour(248, 113, 113));
+    } else {
+        _view->clearInputs();
+        _view->updateUserData(
+            _model->getCurrentUserFullName(),
+            _model->isCurrentUserAdmin(),
+            _model->getRentalHistory()
+        );
+
+        _view->info->SetLabel("Sukces: Pojazd zostal dodany!");
+        _view->info->SetForegroundColour(wxColour(52, 211, 153));
+    }
+
+} catch (const std::exception& e) {
+    _view->info->SetLabel("Blad: Nieprawidlowe dane liczbowe!");
+    _view->info->SetForegroundColour(wxColour(248, 113, 113));
+}
     _view->Layout();
 }
