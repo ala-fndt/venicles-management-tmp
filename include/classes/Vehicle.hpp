@@ -16,6 +16,7 @@ protected:
   std::string fuelType;
   std::string technicalStatus;
   int mileage;
+  int pricePerDay = 170;
 
 public:
   Vehicle(std::string brand, std::string model, std::string year,
@@ -46,6 +47,7 @@ public:
   std::string getFuelType() const;
   std::string getTechnicalStatus() const;
   int getMileage() const;
+  int getPricePerDay() const;
 };
 
 #endif // VEHICLE_HPP

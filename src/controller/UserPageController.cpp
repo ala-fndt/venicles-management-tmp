@@ -39,6 +39,7 @@ void UserPageController::OnAddVehicleClicked(wxCommandEvent &event) {
     std::string fuelType = _view->fuelTypeInput->GetValue().Upper().ToStdString();
     std::string status = _view->technicalStatusInput->GetValue().Upper().ToStdString();
     std::string mileage = _view->mileageInput->GetValue().ToStdString();
+    std::string pricePerDay = _view->pricePerDayInput->GetValue().ToStdString();
     std::string seats = _view->numberOfSeatsInput->GetValue().ToStdString();
     std::string engine = _view->engineCapacityInput->GetValue().ToStdString();
     std::string handle = _view->handleBarsTypeInput->GetValue().Upper().ToStdString();

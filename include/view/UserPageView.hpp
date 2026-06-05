@@ -28,6 +28,7 @@ public:
     wxTextCtrl *fuelTypeInput;
     wxTextCtrl *technicalStatusInput;
     wxTextCtrl *mileageInput;
+    wxTextCtrl *pricePerDayInput;
     wxTextCtrl *numberOfSeatsInput;
     wxTextCtrl *engineCapacityInput;
     wxTextCtrl *handleBarsTypeInput;

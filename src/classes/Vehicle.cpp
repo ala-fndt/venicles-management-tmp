@@ -38,3 +38,4 @@ std::string Vehicle::getTechnicalStatus() const {
   return this->technicalStatus;
 }
 int Vehicle::getMileage() const { return this->mileage; }
+int Vehicle::getPricePerDay() const { return this->pricePerDay; }
