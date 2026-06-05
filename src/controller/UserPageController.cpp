@@ -13,33 +13,19 @@ UserPageController::UserPageController(UserPageView *view, UserPageModel *model,
 
     _view->backButton->Bind(wxEVT_BUTTON, &UserPageController::OnBackButtonClick, this);
     _view->addVehicleButton->Bind(wxEVT_BUTTON, &UserPageController::OnAddVehicleClicked, this);
-    _view->Bind(wxEVT_SHOW, &UserPageController::OnViewShow, this);
 
-    // Początkowe załadowanie danych
-    RefreshView();
+    // KONTROLER decyduje co przekazać do widoku
+    _view->updateUserData(
+        _model->getCurrentUserFullName(),
+        _model->isCurrentUserAdmin(),
+        _model->getRentalHistory()
+    );
 }
 
 void UserPageController::OnBackButtonClick(wxCommandEvent &event) {
     _view->clearInputs();
     this->router->navigate("home");
     _view->GetParent()->Layout();
-}
-
-void UserPageController::OnViewShow(wxShowEvent& event) {
-    if (event.IsShown()) {
-        RefreshView();
-    }
-    event.Skip();
-}
-
-void UserPageController::RefreshView() {
-    if (!_view || !_model) return;
-
-    _view->updateUserData(
-        _model->getCurrentUserFullName(),
-        _model->isCurrentUserAdmin(),
-        _model->getRentalHistory()
-    );
 }
 
 void UserPageController::OnAddVehicleClicked(wxCommandEvent &event) {

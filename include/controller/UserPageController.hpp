@@ -14,9 +14,6 @@ private:
     Validator* _validator;
     Router* router;
 
-    void OnViewShow(wxShowEvent& event);
-    void RefreshView();
-
 public:
     UserPageController(UserPageView* view, UserPageModel* model, Router* router, Validator* validator);
     virtual ~UserPageController() = default;
