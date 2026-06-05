@@ -1,29 +1,36 @@
 #include "../../include/controller/UserPageController.hpp"
 #include "../../include/view/UserPageView.hpp"
 #include "../../include/model/UserPageModel.hpp"
-#include "../../include/classes/Session.hpp"
 #include <ctime>
 
 UserPageController::UserPageController(UserPageView *view, UserPageModel *model,
                                        Router *router, Validator *validator)
     : _view(view), _model(model), _validator(validator), router(router) {
+    
+    if (!_view || !_model) {
+        return;
+    }
 
-  _view->backButton->Bind(wxEVT_BUTTON, &UserPageController::OnBackButtonClick,
-                          this);
+    _view->backButton->Bind(wxEVT_BUTTON, &UserPageController::OnBackButtonClick, this);
+    _view->addVehicleButton->Bind(wxEVT_BUTTON, &UserPageController::OnAddVehicleClicked, this);
 
-  _view->addVehicleButton->Bind(wxEVT_BUTTON, &UserPageController::OnAddVehicleClicked, this);
-
-  _view->isAdmin = Session::getInstance().getAdmin();
+    // KONTROLER decyduje co przekazać do widoku
+    _view->updateUserData(
+        _model->getCurrentUserFullName(),
+        _model->isCurrentUserAdmin(),
+        _model->getRentalHistory()
+    );
 }
 
 void UserPageController::OnBackButtonClick(wxCommandEvent &event) {
-  _view->clearInputs();
-  this->router->navigate("home");
-  _view->GetParent()->Layout(); // Force layout update on the container
+    _view->clearInputs();
+    this->router->navigate("home");
+    _view->GetParent()->Layout();
 }
 
 void UserPageController::OnAddVehicleClicked(wxCommandEvent &event) {
-    (void)event; // Fix unused parameter warning
+    if (!_view || !_model) return;
+
     std::string vin = _view->vinInput->GetValue().Upper().ToStdString();
     std::string brand = _view->brandInput->GetValue().Upper().ToStdString();
     std::string model = _view->modelInput->GetValue().Upper().ToStdString();
@@ -40,12 +47,9 @@ void UserPageController::OnAddVehicleClicked(wxCommandEvent &event) {
     
     _view->info->SetLabel("");
 
-    if (_validator->checkEmpty(vin) || 
-        _validator->checkEmpty(brand) || 
-        _validator->checkEmpty(model) ||
-        _validator->checkEmpty(year) ||
-        _validator->checkEmpty(fuelType) ||
-        _validator->checkEmpty(status) ||
+    if (_validator->checkEmpty(vin) || _validator->checkEmpty(brand) || 
+        _validator->checkEmpty(model) || _validator->checkEmpty(year) ||
+        _validator->checkEmpty(fuelType) || _validator->checkEmpty(status) ||
         _validator->checkEmpty(mileage)) {
         
         _view->info->SetLabel("Blad: Wszystkie pola musza byc wypelnione!");
@@ -54,34 +58,36 @@ void UserPageController::OnAddVehicleClicked(wxCommandEvent &event) {
         return;
     }
 
-    // Walidacja zakresu roku (przywrócona)
-    int yearInt = std::stoi(year);
-    std::time_t t = std::time(nullptr);
-    std::tm* now = std::localtime(&t);
-    int currentYear = now->tm_year + 1900;
+    try {
+        int yearInt = std::stoi(year);
+        std::time_t t = std::time(nullptr);
+        std::tm* now = std::localtime(&t);
+        int currentYear = now->tm_year + 1900;
 
-    if (yearInt < 1885 || yearInt > currentYear) {
-        std::string errorMsg = "Blad: Rok musi byc miedzy 1885 a " + std::to_string(currentYear) + "!";
-        _view->info->SetLabel(errorMsg);
-        _view->info->SetForegroundColour(wxColour(248, 113, 113));
-        _view->Layout();
-        return;
-    }
+        if (yearInt < 1885 || yearInt > currentYear) {
+            throw std::out_of_range("Rok poza zakresem");
+        }
 
-    if (!_model->addVehicle(vin, brand, model, year, color, fuelType, status, 
-                           std::stoi(mileage), seats.empty() ? 0 : std::stoi(seats), 
-                           engine.empty() ? 0 : std::stoi(engine), handle, 
-                           cargo.empty() ? 0 : std::stoi(cargo), axles.empty() ? 0 : std::stoi(axles))) {
-        _view->info->SetLabel("Blad: Nie udalo sie dodac pojazdu do bazy danych!");
+        if (!_model->addVehicle(vin, brand, model, year, color, fuelType, status, 
+                               std::stoi(mileage), seats.empty() ? 0 : std::stoi(seats), 
+                               engine.empty() ? 0 : std::stoi(engine), handle, 
+                               cargo.empty() ? 0 : std::stoi(cargo), axles.empty() ? 0 : std::stoi(axles))) {
+            _view->info->SetLabel("Blad: Nie udalo sie dodac pojazdu!");
+            _view->info->SetForegroundColour(wxColour(248, 113, 113));
+        } else {
+            _view->clearInputs();
+            _view->updateUserData(
+                _model->getCurrentUserFullName(),
+                _model->isCurrentUserAdmin(),
+                _model->getRentalHistory()
+            );
+
+            _view->info->SetLabel("Sukces: Pojazd zostal dodany!");
+            _view->info->SetForegroundColour(wxColour(52, 211, 153));
+        }
+    } catch (...) {
+        _view->info->SetLabel("Blad: Nieprawidlowe dane liczbowe!");
         _view->info->SetForegroundColour(wxColour(248, 113, 113));
-        _view->Layout();
-        return;
     }
-  
-    _view->clearInputs();
-    _view->refresh();
-    
-    _view->info->SetLabel("Sukces: Pojazd zostal dodany pomyslnie!");
-    _view->info->SetForegroundColour(wxColour(52, 211, 153));
     _view->Layout();
 }
