@@ -6,7 +6,7 @@ main
 
 .cache
 .clangd
-
+*.d
 *.log
 *.txt
 *.json
