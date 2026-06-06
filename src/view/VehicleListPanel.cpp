@@ -47,15 +47,14 @@ void VehicleListPanel::refresh() {
   vehicleList.initList(
       "SELECT v.id, v.brand, v.model, v.year, v.color "
       "FROM vehicle v "
-      "WHERE v.id IN (SELECT idVehicle FROM userVehicle WHERE idUser = " +
+      "WHERE v.id IN (SELECT idVehicle FROM activeReservation WHERE idUser = " +
       std::to_string(Session::getInstance().getUserId()) +
       ") ORDER BY v.id;");
   populateList(vehicleList.getList());
 }
 
 void VehicleListPanel::clearList() {
-  m_scrollArea->DestroyChildren();
-  m_listSizer->Clear(false);
+  m_listSizer->Clear(true);
 }
 
 void VehicleListPanel::populateList(const std::vector<VehicleSummary> &vehicles) {
@@ -63,8 +62,7 @@ void VehicleListPanel::populateList(const std::vector<VehicleSummary> &vehicles)
 
   if (vehicles.empty()) {
     wxStaticText *emptyLabel =
-        new wxStaticText(scrollArea, wxID_ANY, "No vehicles in the database");
-        new wxStaticText(m_scrollArea, wxID_ANY, "Brak aut w bazie");
+        new wxStaticText(m_scrollArea, wxID_ANY, "No vehicles in the database");
     emptyLabel->SetForegroundColour(wxColour(156, 163, 175));
     m_listSizer->Add(emptyLabel, 0, wxALL, 8);
   }

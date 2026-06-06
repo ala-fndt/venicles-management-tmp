@@ -181,7 +181,6 @@ UserPageView::UserPageView(wxWindow *window, Validator *validator, UserPageModel
     mileageInput->SetBackgroundColour(wxColour(17, 24, 39));
     mileageInput->SetForegroundColour(wxColour(243, 244, 246));
 
-    wxStaticText *seatsLabel = new wxStaticText(adminPanel, wxID_ANY, "Seats:");
     wxStaticText *priceLabel = new wxStaticText(adminPanel, wxID_ANY, "Cena/dzien:");
     priceLabel->SetForegroundColour(wxColour(156, 163, 175));
     priceLabel->SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
