@@ -34,6 +34,7 @@ void UserPageController::OnAddVehicleClicked(wxCommandEvent &event) {
     if (!_view->info || !_view->vinInput || !_view->brandInput || !_view->modelInput ||
         !_view->yearInput || !_view->colorInput || !_view->fuelTypeInput ||
         !_view->technicalStatusInput || !_view->mileageInput ||
+        !_view->pricePerDayInput ||
         !_view->numberOfSeatsInput || !_view->engineCapacityInput ||
         !_view->handleBarsTypeInput || !_view->maxCargoWeightInput ||
         !_view->numberOfAxlesInput) {
@@ -60,7 +61,7 @@ void UserPageController::OnAddVehicleClicked(wxCommandEvent &event) {
     if (_validator->checkEmpty(vin) || _validator->checkEmpty(brand) || 
         _validator->checkEmpty(model) || _validator->checkEmpty(year) ||
         _validator->checkEmpty(fuelType) || _validator->checkEmpty(status) ||
-        _validator->checkEmpty(mileage)) {
+        _validator->checkEmpty(mileage) || _validator->checkEmpty(pricePerDay)) {
         
         _view->info->SetLabel("Blad: Wszystkie pola musza byc wypelnione!");
         _view->info->SetForegroundColour(wxColour(248, 113, 113));
@@ -81,12 +82,14 @@ void UserPageController::OnAddVehicleClicked(wxCommandEvent &event) {
     }
 
     int mileageInt = std::stoi(mileage);
+    int pricePerDayInt = std::stoi(pricePerDay);
     int seatsInt   = seats.empty()  ? 0 : std::stoi(seats);
     int engineInt  = engine.empty() ? 0 : std::stoi(engine);
     int cargoInt   = cargo.empty()  ? 0 : std::stoi(cargo);
     int axlesInt   = axles.empty()  ? 0 : std::stoi(axles);
     if (!_model->addVehicle(vin, brand, model, year, color, fuelType, status, 
-                            mileageInt, seatsInt, engineInt, handle, cargoInt, axlesInt)) {
+                            mileageInt, pricePerDayInt, seatsInt, engineInt,
+                            handle, cargoInt, axlesInt)) {
         
         _view->info->SetLabel("Blad: Nie udalo sie dodac pojazdu!");
         _view->info->SetForegroundColour(wxColour(248, 113, 113));

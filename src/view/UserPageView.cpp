@@ -164,6 +164,14 @@ UserPageView::UserPageView(wxWindow *window, Validator *validator, UserPageModel
     mileageInput->SetBackgroundColour(wxColour(17, 24, 39));
     mileageInput->SetForegroundColour(wxColour(243, 244, 246));
 
+    wxStaticText *priceLabel = new wxStaticText(adminPanel, wxID_ANY, "Cena/dzien:");
+    priceLabel->SetForegroundColour(wxColour(156, 163, 175));
+    priceLabel->SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
+    pricePerDayInput = new wxTextCtrl(adminPanel, wxID_ANY);
+    pricePerDayInput->SetValidator(wxTextValidator(wxFILTER_DIGITS));
+    pricePerDayInput->SetBackgroundColour(wxColour(17, 24, 39));
+    pricePerDayInput->SetForegroundColour(wxColour(243, 244, 246));
+
     wxStaticText *seatsLabel = new wxStaticText(adminPanel, wxID_ANY, "Miejsca:");
     seatsLabel->SetForegroundColour(wxColour(156, 163, 175));
     seatsLabel->SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
@@ -219,6 +227,8 @@ UserPageView::UserPageView(wxWindow *window, Validator *validator, UserPageModel
     formSizer->Add(technicalStatusInput, 1, wxEXPAND);
     formSizer->Add(mileageLabel, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 10);
     formSizer->Add(mileageInput, 1, wxEXPAND);
+    formSizer->Add(priceLabel, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 10);
+    formSizer->Add(pricePerDayInput, 1, wxEXPAND);
     formSizer->Add(seatsLabel, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 10);
     formSizer->Add(numberOfSeatsInput, 1, wxEXPAND);
     formSizer->Add(engineLabel, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 10);
@@ -369,7 +379,8 @@ void UserPageView::clearInputs()
     {
         _validator->clearFields(std::vector<wxTextCtrl*>{
             vinInput, brandInput, modelInput, yearInput, colorInput,
-            fuelTypeInput, technicalStatusInput, mileageInput, numberOfSeatsInput,
+            fuelTypeInput, technicalStatusInput, mileageInput, pricePerDayInput,
+            numberOfSeatsInput,
             engineCapacityInput, handleBarsTypeInput, maxCargoWeightInput, numberOfAxlesInput
         });
     }

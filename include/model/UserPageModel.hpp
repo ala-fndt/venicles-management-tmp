@@ -30,6 +30,7 @@ public:
                     const std::string& fuelType, 
                     const std::string& technicalStatus, 
                     int mileage, 
+                    int pricePerDay,
                     int numberOfSeats, 
                     int engineCapacity, 
                     const std::string& handleBarsType, 
