@@ -16,7 +16,7 @@ LoginView::LoginView(wxWindow *window, Router *router, Validator *validator_ptr)
   wxBoxSizer *formSizer = new wxBoxSizer(wxVERTICAL);
 
   wxStaticText *titleLabel =
-      new wxStaticText(this, wxID_ANY, "Logowanie", wxDefaultPosition,
+      new wxStaticText(this, wxID_ANY, "Login", wxDefaultPosition,
                        wxDefaultSize, wxALIGN_CENTER);
   titleLabel->SetFont(
       wxFont(18, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
@@ -24,7 +24,7 @@ LoginView::LoginView(wxWindow *window, Router *router, Validator *validator_ptr)
   formSizer->Add(titleLabel, 0, wxALIGN_CENTER | wxBOTTOM, 4);
 
   wxStaticText *subLabel =
-      new wxStaticText(this, wxID_ANY, "Wprowadz dane aby kontynuowac",
+      new wxStaticText(this, wxID_ANY, "Enter your details to continue",
                        wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
   subLabel->SetFont(
       wxFont(9, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL));

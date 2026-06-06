@@ -16,7 +16,7 @@ VehicleListPanel::VehicleListPanel(wxWindow *parent, Database *database,
   wxBoxSizer *rootSizer = new wxBoxSizer(wxVERTICAL);
 
   wxStaticText *title =
-      new wxStaticText(this, wxID_ANY, "Lista aut", wxDefaultPosition,
+      new wxStaticText(this, wxID_ANY, "Vehicle list", wxDefaultPosition,
                        wxDefaultSize, wxALIGN_LEFT);
   title->SetForegroundColour(wxColour(255, 255, 255));
   title->SetFont(wxFont(12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
@@ -47,15 +47,14 @@ void VehicleListPanel::refresh() {
   vehicleList.initList(
       "SELECT v.id, v.brand, v.model, v.year, v.color "
       "FROM vehicle v "
-      "WHERE v.id IN (SELECT idVehicle FROM userVehicle WHERE idUser = " +
+      "WHERE v.id IN (SELECT idVehicle FROM activeReservation WHERE idUser = " +
       std::to_string(Session::getInstance().getUserId()) +
       ") ORDER BY v.id;");
   populateList(vehicleList.getList());
 }
 
 void VehicleListPanel::clearList() {
-  m_scrollArea->DestroyChildren();
-  m_listSizer->Clear(false);
+  m_listSizer->Clear(true);
 }
 
 void VehicleListPanel::populateList(const std::vector<VehicleSummary> &vehicles) {
@@ -63,7 +62,7 @@ void VehicleListPanel::populateList(const std::vector<VehicleSummary> &vehicles)
 
   if (vehicles.empty()) {
     wxStaticText *emptyLabel =
-        new wxStaticText(m_scrollArea, wxID_ANY, "Brak aut w bazie");
+        new wxStaticText(m_scrollArea, wxID_ANY, "No vehicles in the database");
     emptyLabel->SetForegroundColour(wxColour(156, 163, 175));
     m_listSizer->Add(emptyLabel, 0, wxALL, 8);
   }
@@ -74,7 +73,7 @@ void VehicleListPanel::populateList(const std::vector<VehicleSummary> &vehicles)
 
     wxBoxSizer *itemSizer = new wxBoxSizer(wxVERTICAL);
     wxString itemTitleText =
-      "Auto " + wxString::Format("%d", static_cast<int>(i + 1)) + ": " +
+      "Vehicle " + wxString::Format("%d", static_cast<int>(i + 1)) + ": " +
       toWx(vehicles[i].brand) + " " +
       toWx(vehicles[i].model);
     wxStaticText *itemTitle =
@@ -83,8 +82,8 @@ void VehicleListPanel::populateList(const std::vector<VehicleSummary> &vehicles)
     itemTitle->SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
                               wxFONTWEIGHT_BOLD));
 
-    wxString itemSubtitleText = "Rok: " + toWx(vehicles[i].year) +
-                  " | Kolor: " + toWx(vehicles[i].color);
+    wxString itemSubtitleText = "Year: " + toWx(vehicles[i].year) +
+            " | Color: " + toWx(vehicles[i].color);
     wxStaticText *itemSubtitle =
       new wxStaticText(vehicleItem, wxID_ANY, itemSubtitleText);
     itemSubtitle->SetForegroundColour(wxColour(156, 163, 175));

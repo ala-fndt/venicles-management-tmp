@@ -38,6 +38,8 @@ public:
     wxButton *addVehicleButton;
     wxPanel *historyPanel;
     wxBoxSizer *historyListSizer;
+    wxPanel *dashboardReservedPanel;
+    wxBoxSizer *dashboardReservedListSizer;
 
     UserPageView(
         wxWindow *window,

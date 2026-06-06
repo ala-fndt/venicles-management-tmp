@@ -84,6 +84,12 @@ void Database::initDatabase() {
       "idVehicle      INTEGER            NOT NULL, "
       "date           TEXT               NOT NULL, "
       "UNIQUE(idUser, idVehicle));",
+
+        "CREATE TABLE IF NOT EXISTS activeReservation("
+        "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        "idUser         INTEGER            NOT NULL, "
+        "idVehicle      INTEGER    UNIQUE  NOT NULL, "
+        "date           TEXT               NOT NULL);",
   };
 
   // INFO: default isertions on database init
@@ -126,6 +132,9 @@ void Database::initDatabase() {
 
       "INSERT OR IGNORE INTO rentalHistory (idUser, idVehicle, date) "
       "VALUES(1, 1, '00-00-0000');",
+
+        "INSERT OR IGNORE INTO activeReservation (idUser, idVehicle, date) "
+        "VALUES(1, 1, '00-00-0000');",
   };
 
   for (const std::string &sql : tables) {
@@ -147,7 +156,7 @@ void Database::initDatabase() {
   }
 
   if (!success) {
-    std::string mess = "Blad tworzenia bazy danych: ";
+    std::string mess = "Database creation error: ";
 
     std::string messageErrors = Database::errorLog(mess, errors);
 

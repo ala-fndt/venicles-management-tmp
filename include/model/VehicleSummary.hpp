@@ -9,6 +9,9 @@ struct VehicleSummary {
   std::string model;
   std::string year;
   std::string color;
+  int mileage = 0;
+  int numberOfSeats = 0;
+  int pricePerDay = 0;
 };
 
 #endif // !VEHICLESUMMARY_HPP

@@ -33,7 +33,8 @@ void RegisterController::OnRegisterClicked(wxCommandEvent &event) {
 
   if (validator->checkEmpty(name) || validator->checkEmpty(surname) ||
       validator->checkEmpty(email) || validator->checkEmpty(password) ||
-      !validator->validateEmail(email)) {
+      !validator->validateEmail(email) ||
+      !validator->validatePassword(password)) {
   } else if (password != confirm) {
     errors.push_back("Passwords do not match.");
   } else {

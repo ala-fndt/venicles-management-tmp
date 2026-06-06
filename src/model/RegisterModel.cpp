@@ -36,12 +36,28 @@ bool RegisterModel::registerUser(const std::string &name,
                                  const std::string &password) {
   errors.clear();
 
-  std::string sql =
-      "INSERT INTO users (name, surname, email, password, isAdmin) VALUES ('" +
-      name + "', '" + surname + "', '" + email + "', '" + password +
-      "', 'false');";
+  auto sanitize = [](std::string value) {
+    std::size_t pos = 0;
+    while ((pos = value.find("'", pos)) != std::string::npos) {
+      value.replace(pos, 1, "''");
+      pos += 2;
+    }
+    return value;
+  };
 
+  std::string sql =
+      "INSERT INTO users (name, surname, email, password, isAdmin, accountBalance) VALUES ('" +
+      sanitize(name) + "', '" + sanitize(surname) + "', '" +
+      sanitize(email) + "', '" + sanitize(password) + "', 0, 0);";
+
+  const std::size_t errorsBeforeInsert = conn->errors.size();
   conn->executeQuery(sql);
+
+  if (conn->errors.size() > errorsBeforeInsert) {
+    errors.push_back("Registration failed. Database rejected the new user.");
+    logger->log(LogLevel::Error, "Failed to register a new user: " + email);
+    return false;
+  }
 
   logger->log(LogLevel::Info, "Registered a new user: " + email);
   return true;
