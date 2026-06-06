@@ -37,6 +37,18 @@ void VehicleList::initList(const std::string &query) {
 
   auto mapVehicle = [](sqlite3_stmt *stmt) -> VehicleSummary {
     VehicleSummary vehicle;
+
+    int shift = 0;
+    int columns = sqlite3_column_count(stmt);
+    if (columns >= 5) {
+      vehicle.id = sqlite3_column_int(stmt, 0);
+      shift = 1;
+    }
+
+    const unsigned char *brand = sqlite3_column_text(stmt, 0 + shift);
+    const unsigned char *model = sqlite3_column_text(stmt, 1 + shift);
+    const unsigned char *year = sqlite3_column_text(stmt, 2 + shift);
+    const unsigned char *color = sqlite3_column_text(stmt, 3 + shift);
     int colCount = sqlite3_column_count(stmt);
 
     if (colCount == 5) {

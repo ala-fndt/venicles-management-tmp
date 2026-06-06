@@ -29,7 +29,16 @@ void UserPageController::OnBackButtonClick(wxCommandEvent &event) {
 }
 
 void UserPageController::OnAddVehicleClicked(wxCommandEvent &event) {
-    if (!_view || !_model) return;
+    if (!_view || !_model || !_validator) return;
+
+    if (!_view->info || !_view->vinInput || !_view->brandInput || !_view->modelInput ||
+        !_view->yearInput || !_view->colorInput || !_view->fuelTypeInput ||
+        !_view->technicalStatusInput || !_view->mileageInput ||
+        !_view->numberOfSeatsInput || !_view->engineCapacityInput ||
+        !_view->handleBarsTypeInput || !_view->maxCargoWeightInput ||
+        !_view->numberOfAxlesInput) {
+        return;
+    }
 
     std::string vin = _view->vinInput->GetValue().Upper().ToStdString();
     std::string brand = _view->brandInput->GetValue().Upper().ToStdString();

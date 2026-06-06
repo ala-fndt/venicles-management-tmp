@@ -1,6 +1,7 @@
 #ifndef HOMEVIEW_HPP
 #define HOMEVIEW_HPP
 
+#include "../include/classes/IRefreshable.hpp"
 #include "../include/view/VehicleCarouselWidget.hpp"
 #include <wx/wx.h>
 
@@ -8,9 +9,10 @@ class Router;
 class Database;
 class Logger;
 
-class HomeView : public wxPanel {
+class HomeView : public wxPanel, public IRefreshable {
 private:
   Router *router;
+  VehicleCarouselWidget *carousel;
 
 public:
   wxButton *logoutBtn;
@@ -20,6 +22,7 @@ public:
            Logger *logger);
 
   void change();
+  void refresh() override;
 };
 
 #endif // !HOMEVIEW_HPP

@@ -48,8 +48,29 @@ bool UserPageModel::addVehicle(const std::string& vin, const std::string& brand,
                       + (cargo > 0 ? std::to_string(cargo) : "NULL") + ", "
                       + (axles > 0 ? std::to_string(axles) : "NULL") + ");";
 
+    const std::size_t errorsBeforeVehicleInsert = database->errors.size();
     database->executeQuery(sql);
-    return true; 
+    if (database->errors.size() > errorsBeforeVehicleInsert) {
+        if (logger) {
+            logger->log(LogLevel::Error, "Nie udalo sie dodac pojazdu do tabeli vehicle.");
+        }
+        return false;
+    }
+
+    std::string userId = std::to_string(Session::getInstance().getUserId());
+    std::string sqlLink = "INSERT INTO userVehicle (idUser, idVehicle, date) VALUES (" +
+                          userId + ", last_insert_rowid(), date('now'));";
+
+    const std::size_t errorsBeforeVehicleLink = database->errors.size();
+    database->executeQuery(sqlLink);
+    if (database->errors.size() > errorsBeforeVehicleLink) {
+        if (logger) {
+            logger->log(LogLevel::Error, "Nie udalo sie przypisac pojazdu do uzytkownika.");
+        }
+        return false;
+    }
+
+    return true;
 }
 
 std::vector<VehicleSummary> UserPageModel::getRentalHistory() {

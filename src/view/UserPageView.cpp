@@ -4,7 +4,12 @@
 #include <wx/textctrl.h>
 #include <wx/valtext.h>
 
-// Konstruktor nie przyjmuje już wskaźnika do modelu, aby zachować czyste MVC
+namespace {
+wxString toWx(const std::string &text)
+{
+    return wxString::From8BitData(text.c_str());
+}
+}
 UserPageView::UserPageView(wxWindow *window, Validator *validator, UserPageModel *model)
     : wxPanel(window),
       _validator(validator),
@@ -291,12 +296,11 @@ void UserPageView::refresh()
             row->SetBackgroundColour(wxColour(55, 65, 81));
             wxBoxSizer *rowSizer = new wxBoxSizer(wxVERTICAL);
 
-            wxStaticText *txt = new wxStaticText(row, wxID_ANY,
-                                                 wxString::Format("%s %s (%s) - %s", 
-                                                     v.brand.c_str(), 
-                                                     v.model.c_str(), 
-                                                     v.year.c_str(), 
-                                                     v.color.c_str()));
+            wxString historyText = toWx(v.brand) + " " +
+                                   toWx(v.model) + " (" +
+                                   toWx(v.year) + ") - " +
+                                   toWx(v.color);
+            wxStaticText *txt = new wxStaticText(row, wxID_ANY, historyText);
             txt->SetForegroundColour(wxColour(229, 231, 235));
             rowSizer->Add(txt, 0, wxALL, 10);
 
@@ -343,13 +347,11 @@ void UserPageView::updateUserData(const std::string& fullName, bool isAdmin, con
             row->SetBackgroundColour(wxColour(55, 65, 81));
             wxBoxSizer *rowSizer = new wxBoxSizer(wxVERTICAL);
 
-            wxStaticText *txt = new wxStaticText(row, wxID_ANY,
-                wxString::Format("%s %s (%s) - %s", 
-                    v.brand.c_str(), 
-                    v.model.c_str(), 
-                    v.year.c_str(), 
-                    v.color.c_str()));
-            
+            wxString historyText = toWx(v.brand) + " " +
+                                   toWx(v.model) + " (" +
+                                   toWx(v.year) + ") - " +
+                                   toWx(v.color);
+            wxStaticText *txt = new wxStaticText(row, wxID_ANY, historyText);
             txt->SetForegroundColour(wxColour(229, 231, 235));
             rowSizer->Add(txt, 0, wxALL, 10);
 

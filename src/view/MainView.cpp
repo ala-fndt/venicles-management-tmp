@@ -64,28 +64,40 @@ MainView::MainView(Logger *logger, Database *database)
 }
 
 void MainView::initViews() {
+    logger->log(LogLevel::Debug, "initViews: start");
   homeModel = std::make_unique<HomeModel>(database, logger);
+    logger->log(LogLevel::Debug, "initViews: homeModel created");
   userPageModel = std::make_unique<UserPageModel>(database, logger);
+    logger->log(LogLevel::Debug, "initViews: userPageModel created");
 
   homeView = new HomeView(container, router.get(), database, logger);
+    logger->log(LogLevel::Debug, "initViews: homeView created");
   userPageView = new UserPageView(container, validator.get(), userPageModel.get());
+    logger->log(LogLevel::Debug, "initViews: userPageView created");
 
-  homeController =
+    logger->log(LogLevel::Debug, "initViews: creating homeController");
+    homeController =
       std::make_unique<HomeController>(homeView, homeModel.get(), router.get());
-  userPageController = std::make_unique<UserPageController>(
+    logger->log(LogLevel::Debug, "initViews: homeController created");
+
+    logger->log(LogLevel::Debug, "initViews: creating userPageController");
+    userPageController = std::make_unique<UserPageController>(
       userPageView, userPageModel.get(), router.get(), validator.get());
+    logger->log(LogLevel::Debug, "initViews: userPageController created");
 
   homeView->Hide();
   userPageView->Hide();
 
   router->add("home", homeView);
   router->add("userPage", userPageView);
+    logger->log(LogLevel::Debug, "initViews: routes added");
 
   containerSizer->Add(homeView, 1, wxEXPAND);
   containerSizer->Add(userPageView, 1, wxEXPAND);
   container->Layout();
 
   router->navigate("home");
+    logger->log(LogLevel::Debug, "initViews: navigated home");
 }
 
 MainView::~MainView() = default;

@@ -4,9 +4,15 @@
 #include "../include/view/VehicleCarouselWidget.hpp"
 #include "../include/view/VehicleListPanel.hpp"
 
+static Logger *g_homeLogger = nullptr;
+
 HomeView::HomeView(wxWindow *window, Router *router, Database *database,
                    Logger *logger)
-    : wxPanel(window), router(router) {
+    : wxPanel(window), router(router), carousel(nullptr) {
+  g_homeLogger = logger;
+  if (g_homeLogger) {
+    g_homeLogger->log(LogLevel::Debug, "HomeView: constructor start");
+  }
   SetBackgroundColour(wxColour(17, 24, 39));
   SetForegroundColour(wxColour(229, 231, 235));
 
@@ -35,10 +41,32 @@ HomeView::HomeView(wxWindow *window, Router *router, Database *database,
 
   mainSizer->Add(titleRow, 0, wxEXPAND | wxALL, 5);
 
+  carousel = new VehicleCarouselWidget(this, database, logger);
+  if (g_homeLogger) {
+    g_homeLogger->log(LogLevel::Debug, "HomeView: carousel created");
+  }
   VehicleCarouselWidget *carousel =
       new VehicleCarouselWidget(this, database, logger, nullptr);
   mainSizer->Add(carousel, 1, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 5);
 
   this->SetSizer(mainSizer);
   mainSizer->Fit(this);
+  if (g_homeLogger) {
+    g_homeLogger->log(LogLevel::Debug, "HomeView: constructor end");
+  }
+}
+
+void HomeView::refresh() {
+  if (g_homeLogger) {
+    g_homeLogger->log(LogLevel::Debug, "HomeView: refresh start");
+  }
+
+  if (carousel) {
+    carousel->refreshVehicles();
+  }
+
+  Layout();
+  if (g_homeLogger) {
+    g_homeLogger->log(LogLevel::Debug, "HomeView: refresh end");
+  }
 }

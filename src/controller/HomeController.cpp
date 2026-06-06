@@ -4,10 +4,20 @@
 
 HomeController::HomeController(HomeView *view, HomeModel *model, Router *router)
     : _view(view), _model(model), router(router) {
-
-  _view->logoutBtn->Bind(wxEVT_BUTTON, &HomeController::OnLogoutClicked, this);
-  _view->userPageBtn->Bind(wxEVT_BUTTON, &HomeController::OnUserPageClicked,
+  if (_view && _view->logoutBtn) {
+    _view->logoutBtn->Bind(wxEVT_BUTTON, &HomeController::OnLogoutClicked,
                            this);
+  } else if (router && router->logger) {
+    router->logger->log(LogLevel::Warning,
+                        "HomeController: logoutBtn is null");
+  }
+  if (_view && _view->userPageBtn) {
+    _view->userPageBtn->Bind(wxEVT_BUTTON, &HomeController::OnUserPageClicked,
+                             this);
+  } else if (router && router->logger) {
+    router->logger->log(LogLevel::Warning,
+                        "HomeController: userPageBtn is null");
+  }
 }
 
 HomeController::~HomeController() = default;
