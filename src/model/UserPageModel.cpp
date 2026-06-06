@@ -9,7 +9,7 @@ bool UserPageModel::isCurrentUserAdmin() {
 }
 
 std::string UserPageModel::getCurrentUserFullName() {
-    if (!Session::getInstance().isLogged()) return "Gość";
+    if (!Session::getInstance().isLogged()) return "Guest";
     return Session::getInstance().getName() + " " + Session::getInstance().getSurname();
 }
 
@@ -52,7 +52,7 @@ bool UserPageModel::addVehicle(const std::string& vin, const std::string& brand,
     database->executeQuery(sql);
     if (database->errors.size() > errorsBeforeVehicleInsert) {
         if (logger) {
-            logger->log(LogLevel::Error, "Nie udalo sie dodac pojazdu do tabeli vehicle.");
+            logger->log(LogLevel::Error, "Failed to add vehicle to vehicle table.");
         }
         return false;
     }
@@ -65,7 +65,7 @@ bool UserPageModel::addVehicle(const std::string& vin, const std::string& brand,
     database->executeQuery(sqlLink);
     if (database->errors.size() > errorsBeforeVehicleLink) {
         if (logger) {
-            logger->log(LogLevel::Error, "Nie udalo sie przypisac pojazdu do uzytkownika.");
+            logger->log(LogLevel::Error, "Failed to assign vehicle to user.");
         }
         return false;
     }
@@ -91,6 +91,38 @@ std::vector<VehicleSummary> UserPageModel::getRentalHistory() {
                       "FROM vehicle v "
                       "JOIN rentalHistory rh ON v.id = rh.idVehicle "
                       "WHERE rh.idUser = " + std::to_string(userId) + ";";
+
+    return database->fetch<VehicleSummary>(sql, mapper);
+}
+
+std::vector<VehicleSummary> UserPageModel::getReservedVehicles() {
+    if (!database) return {};
+
+    const bool isAdmin = Session::getInstance().getAdmin();
+    const int userId = Session::getInstance().getUserId();
+    if (!isAdmin && userId < 0) {
+        return {};
+    }
+
+    auto mapper = [](sqlite3_stmt* stmt) -> VehicleSummary {
+        VehicleSummary v;
+        v.id = sqlite3_column_int(stmt, 0);
+        v.brand = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+        v.model = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+        v.year = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+        v.color = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4));
+        return v;
+    };
+
+    std::string sql = "SELECT v.id, v.brand, v.model, v.year, v.color "
+                      "FROM activeReservation ar "
+                      "JOIN vehicle v ON v.id = ar.idVehicle ";
+
+    if (!isAdmin) {
+        sql += "WHERE ar.idUser = " + std::to_string(userId) + " ";
+    }
+
+    sql += "ORDER BY ar.date DESC;";
 
     return database->fetch<VehicleSummary>(sql, mapper);
 }

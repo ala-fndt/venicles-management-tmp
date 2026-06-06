@@ -18,7 +18,7 @@ HomeModel::getVehiclesByQuery(const std::string &query) {
   std::vector<VehicleSummary> vehicles = vehicleList.getList();
 
   if (vehicles.empty() && logger) {
-    logger->log(LogLevel::Warning, "Brak aut w tabeli vehicle");
+    logger->log(LogLevel::Warning, "No vehicles in vehicle table");
   }
 
   return vehicles;

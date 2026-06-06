@@ -20,13 +20,13 @@ HomeView::HomeView(wxWindow *window, Router *router, Database *database,
   wxStaticText *labelTitle = new wxStaticText(this, wxID_ANY, "Home page");
   labelTitle->SetForegroundColour(wxColour(255, 255, 255));
 
-  logoutBtn = new wxButton(this, wxID_ANY, "Wyloguj");
+  logoutBtn = new wxButton(this, wxID_ANY, "Log out");
   logoutBtn->SetBackgroundColour(wxColour(55, 65, 81));
   logoutBtn->SetForegroundColour(wxColour(255, 255, 255));
   logoutBtn->SetFont(
       wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
 
-  userPageBtn = new wxButton(this, wxID_ANY, "Twoje konto");
+  userPageBtn = new wxButton(this, wxID_ANY, "Your account");
   userPageBtn->SetBackgroundColour(wxColour(55, 65, 81));
   userPageBtn->SetForegroundColour(wxColour(255, 255, 255));
   userPageBtn->SetFont(

@@ -14,7 +14,7 @@ VehicleListPanel::VehicleListPanel(wxWindow *parent,
   wxBoxSizer *rootSizer = new wxBoxSizer(wxVERTICAL);
 
   wxStaticText *title =
-      new wxStaticText(this, wxID_ANY, "Lista aut", wxDefaultPosition,
+      new wxStaticText(this, wxID_ANY, "Vehicle list", wxDefaultPosition,
                        wxDefaultSize, wxALIGN_LEFT);
   title->SetForegroundColour(wxColour(255, 255, 255));
   title->SetFont(wxFont(12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
@@ -29,7 +29,7 @@ VehicleListPanel::VehicleListPanel(wxWindow *parent,
 
   if (vehicles.empty()) {
     wxStaticText *emptyLabel =
-        new wxStaticText(scrollArea, wxID_ANY, "Brak aut w bazie");
+        new wxStaticText(scrollArea, wxID_ANY, "No vehicles in the database");
     emptyLabel->SetForegroundColour(wxColour(156, 163, 175));
     listSizer->Add(emptyLabel, 0, wxALL, 8);
   }
@@ -40,7 +40,7 @@ VehicleListPanel::VehicleListPanel(wxWindow *parent,
 
     wxBoxSizer *itemSizer = new wxBoxSizer(wxVERTICAL);
     wxString itemTitleText =
-      "Auto " + wxString::Format("%d", static_cast<int>(i + 1)) + ": " +
+      "Vehicle " + wxString::Format("%d", static_cast<int>(i + 1)) + ": " +
       toWx(vehicles[i].brand) + " " +
       toWx(vehicles[i].model);
     wxStaticText *itemTitle =
@@ -49,8 +49,8 @@ VehicleListPanel::VehicleListPanel(wxWindow *parent,
     itemTitle->SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
                               wxFONTWEIGHT_BOLD));
 
-    wxString itemSubtitleText = "Rok: " + toWx(vehicles[i].year) +
-                  " | Kolor: " + toWx(vehicles[i].color);
+    wxString itemSubtitleText = "Year: " + toWx(vehicles[i].year) +
+            " | Color: " + toWx(vehicles[i].color);
     wxStaticText *itemSubtitle =
       new wxStaticText(vehicleItem, wxID_ANY, itemSubtitleText);
     itemSubtitle->SetForegroundColour(wxColour(156, 163, 175));

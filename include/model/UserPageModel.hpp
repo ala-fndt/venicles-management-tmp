@@ -22,6 +22,7 @@ public:
     std::string getCurrentUserFullName();
     
     std::vector<VehicleSummary> getRentalHistory();
+    std::vector<VehicleSummary> getReservedVehicles();
     bool addVehicle(const std::string& vin, 
                     const std::string& brand, 
                     const std::string& model, 
