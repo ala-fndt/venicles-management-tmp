@@ -1,6 +1,8 @@
 #include "../include/view/HomeView.hpp"
 #include "../include/additionalScripts/Logger.hpp"
 #include "../include/database/Database.hpp"
+#include "../include/view/VehicleCarouselWidget.hpp"
+#include "../include/view/VehicleListPanel.hpp"
 
 HomeView::HomeView(wxWindow *window, Router *router, Database *database,
                    Logger *logger)
@@ -34,7 +36,7 @@ HomeView::HomeView(wxWindow *window, Router *router, Database *database,
   mainSizer->Add(titleRow, 0, wxEXPAND | wxALL, 5);
 
   VehicleCarouselWidget *carousel =
-      new VehicleCarouselWidget(this, database, logger);
+      new VehicleCarouselWidget(this, database, logger, nullptr);
   mainSizer->Add(carousel, 1, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 5);
 
   this->SetSizer(mainSizer);
