@@ -5,7 +5,7 @@ Vehicle::Vehicle(std::string brand, std::string model, std::string year,
                  std::string fuelType, std::string technicalStatus, int mileage)
     : brand(brand), model(model), year(year), color(color),
       licensePlate(licensePlate), vin(vin), fuelType(fuelType),
-      technicalStatus(technicalStatus), mileage(mileage) {}
+      technicalStatus(technicalStatus), mileage(mileage), pricePerDay(170) {}
 
 Vehicle::Vehicle() {};
 

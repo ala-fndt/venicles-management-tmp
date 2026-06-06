@@ -93,7 +93,7 @@ void Database::initDatabase() {
 
       "INSERT OR IGNORE INTO users (name, surname, email, password, isAdmin, accountBalance) "
 
-      "VALUES('Jan', 'Kowalski', 'JanK@example.com', '123', 0, 0);",
+      "VALUES('Jan', 'Kowalski', 'JanK@example.com', '123', 0, 15700);",
 
       "INSERT OR IGNORE INTO vehicle (brand, vin, model, year, color, "
       "fuelType, technicalStatus, mileage, pricePerDay, numberOfSeats) "
@@ -107,7 +107,7 @@ void Database::initDatabase() {
 
       "INSERT OR IGNORE INTO vehicle (brand, vin, model, year, color, "
       "fuelType, technicalStatus, mileage, pricePerDay, numberOfSeats) "
-      "VALUES('BMW', 'WBA3A5C57DF357921' ,'x5', '2007', 'WHITE', 'DIESEL', "
+      "VALUES('BMW', 'WBA3A5C57DF354321' ,'x5', '2007', 'WHITE', 'DIESEL', "
       "'Good', 2000, 170, 4);",
 
       "INSERT INTO vehicle (vin, brand, model, year, color,fuelType, "

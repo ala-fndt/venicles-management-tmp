@@ -11,15 +11,16 @@ private:
   std::string email;
   std::string password;
   bool isAdmin;
-
+  int accountBalance;
+  
 public:
   User();
 
   User(std::string name, std::string surname, std::string email,
-       std::string password);
+       std::string password, int accountBalance);
 
   User(int userId, std::string name, std::string surname, std::string email,
-       std::string password, bool isAdmin);
+       std::string password, bool isAdmin, int accountBalance);
 
   virtual ~User();
 
@@ -35,6 +36,8 @@ public:
   void setPassword(std::string password);
 
   void setAdminPermission(bool isAdmin);
+  
+  void setAccountBalance(int accountBalance);
 
   // info: gettery
   int getId() const;
@@ -48,6 +51,8 @@ public:
   std::string getPassword() const;
 
   bool getAdminPermission() const;
+
+  int getAccountBalance() const;
 };
 
 #endif // !USER_HPP
