@@ -1,6 +1,7 @@
 #include "../include/view/VehicleCarouselWidget.hpp"
 #include "../include/classes/Session.hpp"
 #include "../include/classes/VehicleList.hpp"
+#include <random>
 
 namespace {
 wxString toWx(const std::string &text) {
@@ -231,6 +232,36 @@ VehicleCarouselWidget::VehicleCarouselWidget(wxWindow *parent, Database *databas
       return;
     }
 
+    auto mileageRows = this->database->fetch<int>(
+        "SELECT mileage FROM vehicle WHERE id = " +
+            std::to_string(selectedVehicleId) + " LIMIT 1;",
+        [](sqlite3_stmt *stmt) { return sqlite3_column_int(stmt, 0); });
+    if (mileageRows.empty()) {
+      reserveInfo->SetLabel("Error: Failed to read vehicle mileage.");
+      reserveInfo->SetForegroundColour(wxColour(248, 113, 113));
+      detailPanel->Layout();
+      return;
+    }
+
+    std::random_device randomDevice;
+    std::mt19937 generator(randomDevice());
+    std::uniform_int_distribution<int> distanceDistribution(50, 200);
+    const int mileageIncrease = distanceDistribution(generator);
+
+    const std::size_t errorsBeforeMileageUpdate = this->database->errors.size();
+    std::string mileageSql =
+        "UPDATE vehicle SET mileage = " +
+        std::to_string(mileageRows.front() + mileageIncrease) +
+        " WHERE id = " + std::to_string(selectedVehicleId) + ";";
+    this->database->executeQuery(mileageSql);
+
+    if (this->database->errors.size() > errorsBeforeMileageUpdate) {
+      reserveInfo->SetLabel("Error: Failed to update vehicle mileage.");
+      reserveInfo->SetForegroundColour(wxColour(248, 113, 113));
+      detailPanel->Layout();
+      return;
+    }
+
     const std::size_t errorsBeforeDelete = this->database->errors.size();
     std::string returnSql =
         "DELETE FROM activeReservation WHERE idVehicle = " +
@@ -451,10 +482,13 @@ void VehicleCarouselWidget::refreshReservedList() {
     v.model = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 2));
     v.year = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 3));
     v.color = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 4));
+    v.mileage = sqlite3_column_int(stmt, 5);
+    v.numberOfSeats = sqlite3_column_int(stmt, 6);
+    v.pricePerDay = sqlite3_column_int(stmt, 7);
     return v;
   };
 
-  std::string sql = "SELECT v.id, v.brand, v.model, v.year, v.color "
+  std::string sql = "SELECT v.id, v.brand, v.model, v.year, v.color, v.mileage, v.numberOfSeats, v.pricePerDay "
                     "FROM activeReservation ar "
                     "JOIN vehicle v ON v.id = ar.idVehicle ";
 
@@ -484,7 +518,11 @@ void VehicleCarouselWidget::refreshReservedList() {
       rowTitle->SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
                                wxFONTWEIGHT_BOLD));
 
-      wxString subtitleText = "Year: " + toWx(v.year) + " | Color: " + toWx(v.color);
+      wxString subtitleText = "Year: " + toWx(v.year) +
+                              " | Color: " + toWx(v.color) +
+                              " | Mileage: " + wxString::Format("%d km", v.mileage) +
+                              " | Seats: " + wxString::Format("%d", v.numberOfSeats) +
+                              " | Price/day: " + wxString::Format("%d PLN", v.pricePerDay);
       wxStaticText *rowSub = new wxStaticText(row, wxID_ANY, subtitleText);
       rowSub->SetForegroundColour(wxColour(156, 163, 175));
       rowSub->SetFont(wxFont(9, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,

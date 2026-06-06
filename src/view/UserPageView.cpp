@@ -181,7 +181,7 @@ UserPageView::UserPageView(wxWindow *window, Validator *validator, UserPageModel
     mileageInput->SetBackgroundColour(wxColour(17, 24, 39));
     mileageInput->SetForegroundColour(wxColour(243, 244, 246));
 
-    wxStaticText *priceLabel = new wxStaticText(adminPanel, wxID_ANY, "Cena/dzien:");
+    wxStaticText *priceLabel = new wxStaticText(adminPanel, wxID_ANY, "Price per day:");
     priceLabel->SetForegroundColour(wxColour(156, 163, 175));
     priceLabel->SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
     pricePerDayInput = new wxTextCtrl(adminPanel, wxID_ANY);
@@ -189,7 +189,10 @@ UserPageView::UserPageView(wxWindow *window, Validator *validator, UserPageModel
     pricePerDayInput->SetBackgroundColour(wxColour(17, 24, 39));
     pricePerDayInput->SetForegroundColour(wxColour(243, 244, 246));
 
-    wxStaticText *seatsLabel = new wxStaticText(adminPanel, wxID_ANY, "Miejsca:");
+    wxStaticText *priceUnit = new wxStaticText(adminPanel, wxID_ANY, "PLN/day");
+    priceUnit->SetForegroundColour(wxColour(107, 114, 128));
+
+    wxStaticText *seatsLabel = new wxStaticText(adminPanel, wxID_ANY, "Seats:");
     seatsLabel->SetForegroundColour(wxColour(156, 163, 175));
     seatsLabel->SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
     numberOfSeatsInput = new wxTextCtrl(adminPanel, wxID_ANY);
@@ -276,6 +279,7 @@ UserPageView::UserPageView(wxWindow *window, Validator *validator, UserPageModel
     formSizer->Add(mileageUnit, 0, wxALIGN_CENTER_VERTICAL);
     formSizer->Add(priceLabel, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 10);
     formSizer->Add(pricePerDayInput, 1, wxEXPAND);
+    formSizer->Add(priceUnit, 0, wxALIGN_CENTER_VERTICAL);
     formSizer->Add(seatsLabel, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, 10);
     formSizer->Add(numberOfSeatsInput, 1, wxEXPAND);
     formSizer->Add(seatsUnit, 0, wxALIGN_CENTER_VERTICAL);
