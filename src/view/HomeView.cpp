@@ -1,6 +1,8 @@
 #include "../include/view/HomeView.hpp"
 #include "../include/additionalScripts/Logger.hpp"
 #include "../include/database/Database.hpp"
+#include "../include/view/VehicleCarouselWidget.hpp"
+#include "../include/view/VehicleListPanel.hpp"
 
 static Logger *g_homeLogger = nullptr;
 
@@ -43,6 +45,8 @@ HomeView::HomeView(wxWindow *window, Router *router, Database *database,
   if (g_homeLogger) {
     g_homeLogger->log(LogLevel::Debug, "HomeView: carousel created");
   }
+  VehicleCarouselWidget *carousel =
+      new VehicleCarouselWidget(this, database, logger, nullptr);
   mainSizer->Add(carousel, 1, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, 5);
 
   this->SetSizer(mainSizer);

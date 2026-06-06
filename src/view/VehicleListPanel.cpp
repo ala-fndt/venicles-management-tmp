@@ -9,6 +9,9 @@ wxString toWx(const std::string &text) {
 VehicleListPanel::VehicleListPanel(wxWindow *parent,
                    const std::vector<VehicleSummary> &vehicles)
     : wxPanel(parent) {
+VehicleListPanel::VehicleListPanel(wxWindow *parent, Database *database,
+                                   Logger *logger)
+    : wxPanel(parent), m_database(database), m_logger(logger) {
   SetBackgroundColour(wxColour(31, 41, 55));
 
   wxBoxSizer *rootSizer = new wxBoxSizer(wxVERTICAL);
