@@ -15,7 +15,7 @@ std::string UserPageModel::getCurrentUserFullName() {
 
 bool UserPageModel::addVehicle(const std::string& vin, const std::string& brand, const std::string& model, 
                                const std::string& year, const std::string& color, const std::string& fuelType, 
-                               const std::string& status, int mileage, int seats, int engine, 
+                               const std::string& status, int mileage, int pricePerDay, int seats, int engine, 
                                const std::string& handle, int cargo, int axles) {
     if (!database) return false;
 
@@ -32,7 +32,7 @@ bool UserPageModel::addVehicle(const std::string& vin, const std::string& brand,
         return str;
     };
 
-    std::string sql = "INSERT INTO vehicle (vin, brand, model, year, color, fuelType, technicalStatus, mileage, "
+    std::string sql = "INSERT INTO vehicle (vin, brand, model, year, color, fuelType, technicalStatus, mileage, pricePerDay, "
                       "numberOfSeats, engineCapacity, handleBarsType, maxCargoWeight, numberOfAxles) VALUES ("
                       "'" + sanitize(vin) + "', "
                       "'" + sanitize(brand) + "', "
@@ -42,6 +42,7 @@ bool UserPageModel::addVehicle(const std::string& vin, const std::string& brand,
                       "'" + sanitize(fuelType) + "', "
                       "'" + sanitize(status) + "', "
                       + std::to_string(mileage) + ", "
+                      + std::to_string(pricePerDay) + ", "
                       + (seats > 0 ? std::to_string(seats) : "NULL") + ", "
                       + (engine > 0 ? std::to_string(engine) : "NULL") + ", "
                       "'" + sanitize(handle) + "', "

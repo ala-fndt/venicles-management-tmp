@@ -4,7 +4,7 @@
 #include <string>
 
 struct VehicleSummary {
-  int id = -1;
+  int id = 0;
   std::string brand;
   std::string model;
   std::string year;

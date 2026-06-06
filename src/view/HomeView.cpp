@@ -1,6 +1,8 @@
 #include "../include/view/HomeView.hpp"
 #include "../include/additionalScripts/Logger.hpp"
 #include "../include/database/Database.hpp"
+#include "../include/view/VehicleCarouselWidget.hpp"
+#include "../include/view/VehicleListPanel.hpp"
 
 static Logger *g_homeLogger = nullptr;
 
