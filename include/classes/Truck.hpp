@@ -7,7 +7,7 @@ class Truck : public Vehicle {
 private:
   int maxCargoWeight;
   int numberOfAxles;
-  int pricePerDay = 450;
+  int pricePerDay;
 
 
 public:

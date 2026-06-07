@@ -5,7 +5,7 @@ Truck::Truck(std::string brand, std::string model, std::string year,
              std::string fuelType, std::string technicalStatus, int mileage,
              int maxCargoWeight, int numberOfAxles)
     : Vehicle(brand, model, year, color, licensePlate, vin, fuelType,
-              technicalStatus, mileage),
+              technicalStatus, mileage), pricePerDay(450),
       maxCargoWeight(maxCargoWeight), numberOfAxles(numberOfAxles) {}
 
 Truck::Truck() {};

@@ -6,7 +6,7 @@ Motorcycle::Motorcycle(std::string brand, std::string model, std::string year,
                        std::string technicalStatus, int mileage,
                        int engineCapacity, std::string handleBarType)
     : Vehicle(brand, model, year, color, licensePlate, vin, fuelType,
-              technicalStatus, mileage),
+              technicalStatus, mileage), pricePerDay(125),
       engineCapacity(engineCapacity), handleBarType(handleBarType) {}
 
 Motorcycle::Motorcycle() {};
