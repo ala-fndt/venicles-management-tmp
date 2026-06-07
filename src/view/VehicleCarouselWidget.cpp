@@ -601,13 +601,14 @@ void VehicleCarouselWidget::populateDetailPanel(const VehicleSummary &vehicle) {
   detailPlaceholder->Hide();
   reserveInfo->SetLabel("");
   detailBrand->SetLabel(toWx(vehicle.brand) + " " + toWx(vehicle.model));
-  detailYear->SetLabel("Production year: " + toWx(vehicle.year) + " | Price: " +
-                       wxString::Format("%d PLN/day", vehicle.pricePerDay));
-  detailColor->SetLabel("Color: " + toWx(vehicle.color));
+  wxString details = "Production year: " + toWx(vehicle.year) + "\n\n" +
+                     "Color: " + toWx(vehicle.color) + "\n\n" +
+                     "Price: " + wxString::Format("%d PLN/day", vehicle.pricePerDay);
+  detailYear->SetLabel(details);
 
   detailBrand->Show();
   detailYear->Show();
-  detailColor->Show();
+  detailColor->Hide();
   detailReservationStatus->Show();
 }
 

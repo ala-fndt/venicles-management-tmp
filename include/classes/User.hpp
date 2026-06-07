@@ -17,10 +17,10 @@ public:
   User();
 
   User(std::string name, std::string surname, std::string email,
-       std::string password, int accountBalance);
+       std::string password);
 
   User(int userId, std::string name, std::string surname, std::string email,
-       std::string password, bool isAdmin, int accountBalance);
+       std::string password, bool isAdmin);
 
   virtual ~User();
 
