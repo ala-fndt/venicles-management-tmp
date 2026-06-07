@@ -9,7 +9,7 @@ User::User(std::string name, std::string surname, std::string email,
            std::string password)
     : name(name), surname(surname), email(email), password(password), accountBalance(14200) {}
 
-User::User() {};
+User::User() : userId(-1), isAdmin(false), accountBalance(14200) {}
 
 User::~User() {}
 
