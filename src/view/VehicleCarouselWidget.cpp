@@ -373,12 +373,24 @@ void VehicleCarouselWidget::refreshVehicles() {
     return;
   }
 
-  VehicleList vehicleList(database, logger);
-  vehicleList.initList("SELECT v.id, v.brand, v.model, v.year, v.color "
-                       "FROM vehicle v "
-                       "ORDER BY v.id;");
+  auto mapper = [](sqlite3_stmt *stmt) -> VehicleSummary {
+    VehicleSummary v;
+    v.id = sqlite3_column_int(stmt, 0);
+    v.brand = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1));
+    v.model = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 2));
+    v.year = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 3));
+    v.color = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 4));
+    v.pricePerDay = sqlite3_column_int(stmt, 5);
+    return v;
+  };
 
-  buildVehicleRows(vehicleList.getList());
+  std::string sql = "SELECT v.id, v.brand, v.model, v.year, v.color, v.pricePerDay "
+                    "FROM vehicle v "
+                    "ORDER BY v.id;";
+
+  std::vector<VehicleSummary> vehicles = database->fetch<VehicleSummary>(sql, mapper);
+
+  buildVehicleRows(vehicles);
   refreshReservedList();
 
   Layout();
@@ -426,7 +438,8 @@ void VehicleCarouselWidget::buildVehicleRows(
     rowTitle->SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
                              wxFONTWEIGHT_BOLD));
 
-    wxString subtitleText = "Year: " + toWx(v.year) + " | Color: " + toWx(v.color);
+    wxString subtitleText = "Year: " + toWx(v.year) + " | Color: " + toWx(v.color) +
+                            " | Price: " + wxString::Format("%d PLN/day", v.pricePerDay);
     wxStaticText *rowSub = new wxStaticText(row, wxID_ANY, subtitleText);
     rowSub->SetForegroundColour(wxColour(156, 163, 175));
     rowSub->SetFont(wxFont(9, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
@@ -588,7 +601,8 @@ void VehicleCarouselWidget::populateDetailPanel(const VehicleSummary &vehicle) {
   detailPlaceholder->Hide();
   reserveInfo->SetLabel("");
   detailBrand->SetLabel(toWx(vehicle.brand) + " " + toWx(vehicle.model));
-  detailYear->SetLabel("Production year: " + toWx(vehicle.year));
+  detailYear->SetLabel("Production year: " + toWx(vehicle.year) + " | Price: " +
+                       wxString::Format("%d PLN/day", vehicle.pricePerDay));
   detailColor->SetLabel("Color: " + toWx(vehicle.color));
 
   detailBrand->Show();

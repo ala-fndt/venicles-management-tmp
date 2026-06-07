@@ -43,14 +43,29 @@ VehicleListPanel::VehicleListPanel(wxWindow *parent, Database *database,
 }
 
 void VehicleListPanel::refresh() {
-  VehicleList vehicleList(m_database, m_logger);
-  vehicleList.initList(
-      "SELECT v.id, v.brand, v.model, v.year, v.color "
+  if (!m_database) {
+    return;
+  }
+
+  auto mapper = [](sqlite3_stmt* stmt) -> VehicleSummary {
+      VehicleSummary v;
+      v.id = sqlite3_column_int(stmt, 0);
+      v.brand = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+      v.model = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+      v.year = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+      v.color = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4));
+      v.pricePerDay = sqlite3_column_int(stmt, 5);
+      return v;
+  };
+
+  std::string sql = "SELECT v.id, v.brand, v.model, v.year, v.color, v.pricePerDay "
       "FROM vehicle v "
       "WHERE v.id IN (SELECT idVehicle FROM activeReservation WHERE idUser = " +
       std::to_string(Session::getInstance().getUserId()) +
-      ") ORDER BY v.id;");
-  populateList(vehicleList.getList());
+      ") ORDER BY v.id;";
+
+  std::vector<VehicleSummary> vehicles = m_database->fetch<VehicleSummary>(sql, mapper);
+  populateList(vehicles);
 }
 
 void VehicleListPanel::clearList() {
@@ -83,7 +98,9 @@ void VehicleListPanel::populateList(const std::vector<VehicleSummary> &vehicles)
                               wxFONTWEIGHT_BOLD));
 
     wxString itemSubtitleText = "Year: " + toWx(vehicles[i].year) +
-            " | Color: " + toWx(vehicles[i].color);
+                                " | Color: " + toWx(vehicles[i].color) +
+                                " | Price/day: " +
+                                wxString::Format("%d PLN", vehicles[i].pricePerDay);
     wxStaticText *itemSubtitle =
       new wxStaticText(vehicleItem, wxID_ANY, itemSubtitleText);
     itemSubtitle->SetForegroundColour(wxColour(156, 163, 175));
