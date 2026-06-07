@@ -20,6 +20,9 @@ public:
 	std::vector<VehicleSummary> getVehicles();
 	std::vector<VehicleSummary> getVehiclesByQuery(const std::string &query);
 	const std::vector<std::string> &getVehicleErrors() const;
+
+	Database* getDatabase();
+	double getAccountBalance();
 };
 
 #endif // !HOMEMODEL_HPP

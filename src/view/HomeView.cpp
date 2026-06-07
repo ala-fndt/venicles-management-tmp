@@ -1,14 +1,15 @@
 #include "../include/view/HomeView.hpp"
 #include "../include/additionalScripts/Logger.hpp"
-#include "../include/database/Database.hpp"
+#include "../include/model/HomeModel.hpp"
 #include "../include/view/VehicleCarouselWidget.hpp"
 #include "../include/view/VehicleListPanel.hpp"
 
 static Logger *g_homeLogger = nullptr;
 
-HomeView::HomeView(wxWindow *window, Router *router, Database *database,
+HomeView::HomeView(wxWindow *window, Router *router, HomeModel *model, Database *database,
                    Logger *logger)
-    : wxPanel(window), router(router), carousel(nullptr) {
+    : wxPanel(window), router(router), model(model), carousel(nullptr),
+      accountBalanceLabel(nullptr) {
   g_homeLogger = logger;
   if (g_homeLogger) {
     g_homeLogger->log(LogLevel::Debug, "HomeView: constructor start");
@@ -21,6 +22,14 @@ HomeView::HomeView(wxWindow *window, Router *router, Database *database,
 
   wxStaticText *labelTitle = new wxStaticText(this, wxID_ANY, "Home page");
   labelTitle->SetForegroundColour(wxColour(255, 255, 255));
+  labelTitle->SetFont(
+      wxFont(12, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
+
+  accountBalanceLabel = new wxStaticText(this, wxID_ANY, "");
+  accountBalanceLabel->SetForegroundColour(wxColour(167, 243, 208));
+  accountBalanceLabel->SetFont(
+      wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
+             wxFONTWEIGHT_NORMAL));
 
   logoutBtn = new wxButton(this, wxID_ANY, "Log out");
   logoutBtn->SetBackgroundColour(wxColour(55, 65, 81));
@@ -35,13 +44,16 @@ HomeView::HomeView(wxWindow *window, Router *router, Database *database,
       wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_BOLD));
 
   titleRow->Add(labelTitle, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+  titleRow->Add(accountBalanceLabel, 0, wxLEFT | wxALIGN_CENTER_VERTICAL, 10);
   titleRow->AddStretchSpacer(1);
   titleRow->Add(logoutBtn, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
   titleRow->Add(userPageBtn, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
 
   mainSizer->Add(titleRow, 0, wxEXPAND | wxALL, 5);
 
-  carousel = new VehicleCarouselWidget(this, database, logger);
+  carousel =
+      new VehicleCarouselWidget(this, model ? model->getDatabase() : nullptr,
+                                logger);
   if (g_homeLogger) {
     g_homeLogger->log(LogLevel::Debug, "HomeView: carousel created");
   }
@@ -57,6 +69,12 @@ HomeView::HomeView(wxWindow *window, Router *router, Database *database,
 void HomeView::refresh() {
   if (g_homeLogger) {
     g_homeLogger->log(LogLevel::Debug, "HomeView: refresh start");
+  }
+
+  if (model && accountBalanceLabel) {
+    double balance = model->getAccountBalance();
+    accountBalanceLabel->SetLabel(
+        wxString::Format("Balance: %.2f PLN", balance));
   }
 
   if (carousel) {
