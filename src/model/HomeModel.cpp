@@ -59,5 +59,5 @@ double HomeModel::getAccountBalance() {
         return 0.0;
     }
 
-    return static_cast<double>(result.front()) / 100.0;
+    return static_cast<double>(result.front());
 }

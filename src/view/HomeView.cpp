@@ -52,8 +52,8 @@ HomeView::HomeView(wxWindow *window, Router *router, HomeModel *model, Database 
   mainSizer->Add(titleRow, 0, wxEXPAND | wxALL, 5);
 
   carousel =
-      new VehicleCarouselWidget(this, model ? model->getDatabase() : nullptr,
-                                logger);
+      new VehicleCarouselWidget(this, model ? model->getDatabase() : nullptr, logger,
+                                this);
   if (g_homeLogger) {
     g_homeLogger->log(LogLevel::Debug, "HomeView: carousel created");
   }
