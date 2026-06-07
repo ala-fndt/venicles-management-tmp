@@ -18,17 +18,18 @@ std::vector<std::string> LoginModel::getErrors() {
 std::optional<User> LoginModel::returnUserData(const std::string &email) {
   auto mapToUser = [](sqlite3_stmt *stmt) -> User {
     User user;
-    user.setId((const int)sqlite3_column_int64(stmt, 0));
+    user.setId(static_cast<int>(sqlite3_column_int(stmt, 0)));
     user.setName((const char *)sqlite3_column_text(stmt, 1));
     user.setSurname((const char *)sqlite3_column_text(stmt, 2));
     user.setEmail((const char *)sqlite3_column_text(stmt, 3));
-    user.setAdminPermission((const bool)sqlite3_column_int(stmt, 4));
+    user.setAdminPermission(static_cast<bool>(sqlite3_column_int(stmt, 4)));
+    user.setAccountBalance(sqlite3_column_int(stmt, 5));
     return user;
   };
 
   std::string sql =
-      "SELECT id, name, surname, email, isAdmin FROM users WHERE email = '" +
-      email + "' LIMIT 1;";
+      "SELECT id, name, surname, email, isAdmin, accountBalance FROM users "
+      "WHERE email = '" + email + "' LIMIT 1;";
 
   std::vector<User> users = this->conn->fetch<User>(sql, mapToUser);
 

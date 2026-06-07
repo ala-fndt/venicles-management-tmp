@@ -36,19 +36,13 @@ bool RegisterModel::registerUser(const std::string &name,
                                  const std::string &password) {
   errors.clear();
 
-  auto sanitize = [](std::string value) {
-    std::size_t pos = 0;
-    while ((pos = value.find("'", pos)) != std::string::npos) {
-      value.replace(pos, 1, "''");
-      pos += 2;
-    }
-    return value;
-  };
+  User defaultUser;
+  int startingBalance = defaultUser.getAccountBalance();
 
   std::string sql =
       "INSERT INTO users (name, surname, email, password, isAdmin, accountBalance) VALUES ('" +
-      sanitize(name) + "', '" + sanitize(surname) + "', '" +
-      sanitize(email) + "', '" + sanitize(password) + "', 0, 0);";
+      name + "', '" + surname + "', '" + email + "', '" + password +
+      "', 'false', " + std::to_string(startingBalance) + ");";
 
   const std::size_t errorsBeforeInsert = conn->errors.size();
   conn->executeQuery(sql);

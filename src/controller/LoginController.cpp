@@ -58,11 +58,6 @@ void LoginController::OnSubmitClicked(wxCommandEvent &event) {
   std::string email = user.getEmail();
   Session::getInstance().login(&user);
 
-  if (!this->viewsInitialized) {
-    mainview->initViews();
-    this->viewsInitialized = true;
-  } else {
-    router->navigate("home");
-    mainview->container->Layout(); // Force layout update on the container
-  }
+  router->navigate("home");
+  mainview->container->Layout(); // Force layout update on the container
 }

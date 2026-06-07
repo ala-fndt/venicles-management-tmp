@@ -173,6 +173,48 @@ VehicleCarouselWidget::VehicleCarouselWidget(wxWindow *parent, Database *databas
       return;
     }
 
+    // Pobranie ceny pojazdu
+    auto priceRows = this->database->fetch<int>(
+        "SELECT pricePerDay FROM vehicle WHERE id = " +
+            std::to_string(selectedVehicleId) + " LIMIT 1;",
+        [](sqlite3_stmt *stmt) { return sqlite3_column_int(stmt, 0); });
+
+    if (priceRows.empty()) {
+      reserveInfo->SetLabel("Error: Could not retrieve vehicle price.");
+      reserveInfo->SetForegroundColour(wxColour(248, 113, 113));
+      detailPanel->Layout();
+      return;
+    }
+    const int pricePerDay = priceRows.front();
+
+    // Pobranie i weryfikacja salda użytkownika
+    auto balanceRows = this->database->fetch<int>(
+        "SELECT accountBalance FROM users WHERE id = " +
+            std::to_string(userId) + " LIMIT 1;",
+        [](sqlite3_stmt *stmt) { return sqlite3_column_int(stmt, 0); });
+
+    if (balanceRows.empty()) {
+      reserveInfo->SetLabel("Error: Could not retrieve user balance.");
+      reserveInfo->SetForegroundColour(wxColour(248, 113, 113));
+      detailPanel->Layout();
+      return;
+    }
+    const int accountBalance = balanceRows.front();
+
+    if (accountBalance < pricePerDay) {
+      reserveInfo->SetLabel("Error: Insufficient funds on your account.");
+      reserveInfo->SetForegroundColour(wxColour(248, 113, 113));
+      detailPanel->Layout();
+      return;
+    }
+
+    // Odjęcie środków z konta
+    std::string updateBalanceSql =
+        "UPDATE users SET accountBalance = " +
+        std::to_string(accountBalance - pricePerDay) +
+        " WHERE id = " + std::to_string(userId) + ";";
+    this->database->executeQuery(updateBalanceSql);
+
     const std::size_t errorsBeforeInsert = this->database->errors.size();
     std::string reserveSql =
         "INSERT INTO activeReservation (idUser, idVehicle, date) VALUES (" +
@@ -181,6 +223,13 @@ VehicleCarouselWidget::VehicleCarouselWidget(wxWindow *parent, Database *databas
     this->database->executeQuery(reserveSql);
 
     if (this->database->errors.size() > errorsBeforeInsert) {
+      // Jeśli rezerwacja się nie powiedzie, zwróć środki
+      std::string refundSql =
+          "UPDATE users SET accountBalance = " +
+          std::to_string(accountBalance) +
+          " WHERE id = " + std::to_string(userId) + ";";
+      this->database->executeQuery(refundSql);
+
       reserveInfo->SetLabel("Error: Reservation failed. Vehicle may already be occupied.");
       reserveInfo->SetForegroundColour(wxColour(248, 113, 113));
       detailPanel->Layout();
@@ -373,12 +422,24 @@ void VehicleCarouselWidget::refreshVehicles() {
     return;
   }
 
-  VehicleList vehicleList(database, logger);
-  vehicleList.initList("SELECT v.id, v.brand, v.model, v.year, v.color "
-                       "FROM vehicle v "
-                       "ORDER BY v.id;");
+  auto mapper = [](sqlite3_stmt *stmt) -> VehicleSummary {
+    VehicleSummary v;
+    v.id = sqlite3_column_int(stmt, 0);
+    v.brand = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 1));
+    v.model = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 2));
+    v.year = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 3));
+    v.color = reinterpret_cast<const char *>(sqlite3_column_text(stmt, 4));
+    v.pricePerDay = sqlite3_column_int(stmt, 5);
+    return v;
+  };
 
-  buildVehicleRows(vehicleList.getList());
+  std::string sql = "SELECT v.id, v.brand, v.model, v.year, v.color, v.pricePerDay "
+                    "FROM vehicle v "
+                    "ORDER BY v.id;";
+
+  std::vector<VehicleSummary> vehicles = database->fetch<VehicleSummary>(sql, mapper);
+
+  buildVehicleRows(vehicles);
   refreshReservedList();
 
   Layout();
@@ -426,7 +487,8 @@ void VehicleCarouselWidget::buildVehicleRows(
     rowTitle->SetFont(wxFont(10, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
                              wxFONTWEIGHT_BOLD));
 
-    wxString subtitleText = "Year: " + toWx(v.year) + " | Color: " + toWx(v.color);
+    wxString subtitleText = "Year: " + toWx(v.year) + " | Color: " + toWx(v.color) +
+                            " | Price: " + wxString::Format("%d PLN", v.pricePerDay);
     wxStaticText *rowSub = new wxStaticText(row, wxID_ANY, subtitleText);
     rowSub->SetForegroundColour(wxColour(156, 163, 175));
     rowSub->SetFont(wxFont(9, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
@@ -522,7 +584,7 @@ void VehicleCarouselWidget::refreshReservedList() {
                               " | Color: " + toWx(v.color) +
                               " | Mileage: " + wxString::Format("%d km", v.mileage) +
                               " | Seats: " + wxString::Format("%d", v.numberOfSeats) +
-                              " | Price/day: " + wxString::Format("%d PLN", v.pricePerDay);
+                              " | Price: " + wxString::Format("%d PLN", v.pricePerDay);
       wxStaticText *rowSub = new wxStaticText(row, wxID_ANY, subtitleText);
       rowSub->SetForegroundColour(wxColour(156, 163, 175));
       rowSub->SetFont(wxFont(9, wxFONTFAMILY_DEFAULT, wxFONTSTYLE_NORMAL,
@@ -588,12 +650,14 @@ void VehicleCarouselWidget::populateDetailPanel(const VehicleSummary &vehicle) {
   detailPlaceholder->Hide();
   reserveInfo->SetLabel("");
   detailBrand->SetLabel(toWx(vehicle.brand) + " " + toWx(vehicle.model));
-  detailYear->SetLabel("Production year: " + toWx(vehicle.year));
-  detailColor->SetLabel("Color: " + toWx(vehicle.color));
+  wxString details = "Production year: " + toWx(vehicle.year) + "\n\n" +
+                     "Color: " + toWx(vehicle.color) + "\n\n" +
+                     "Price: " + wxString::Format("%d PLN", vehicle.pricePerDay);
+  detailYear->SetLabel(details);
 
   detailBrand->Show();
   detailYear->Show();
-  detailColor->Show();
+  detailColor->Hide();
   detailReservationStatus->Show();
 }
 

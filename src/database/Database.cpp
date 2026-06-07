@@ -116,12 +116,12 @@ void Database::initDatabase() {
       "VALUES('BMW', 'WBA3A5C57DF354321' ,'x5', '2007', 'WHITE', 'DIESEL', "
       "'Good', 2000, 170, 4);",
 
-      "INSERT INTO vehicle (vin, brand, model, year, color,fuelType, "
+      "INSERT OR IGNORE INTO vehicle (vin, brand, model, year, color,fuelType, "
       "technicalStatus, mileage, pricePerDay, handleBarsType, engineCapacity) VALUES "
       "('JH2SC59057M123456','Honda','CBR600RR','2021','Red','Petrol','Valid', "
       "18500, 125, 'Clip-on',599);",
 
-      "INSERT INTO vehicle (vin, brand, model, year, color,fuelType, "
+      "INSERT OR IGNORE INTO vehicle (vin, brand, model, year, color,fuelType, "
       "technicalStatus, mileage, pricePerDay, numberOfSeats, engineCapacity, maxCargoWeight, "
       "numberOfAxles) VALUES "
       "('WDB9340321L987654','Mercedes-Benz','Actros','2019','White','Diesel','"

@@ -23,32 +23,45 @@ MainView::MainView(Logger *logger, Database *database)
   SetClientSize(wxSize(600, 400));
 
   validator = std::make_unique<Validator>(*logger);
-
   container = new wxPanel(this);
   router = std::make_unique<Router>(container, logger);
 
   loginModel = std::make_unique<LoginModel>(database, logger);
   registerModel = std::make_unique<RegisterModel>(database, logger);
+  homeModel = std::make_unique<HomeModel>(database, logger);
+  userPageModel = std::make_unique<UserPageModel>(database, logger);
 
   loginView = new LoginView(container, router.get(), validator.get());
   registerView = new RegisterView(container, router.get(), validator.get());
+  homeView = new HomeView(container, router.get(), homeModel.get(), database, logger);
+  userPageView = new UserPageView(container, validator.get(), userPageModel.get());
 
   loginController = std::make_unique<LoginController>(
       loginModel.get(), loginView, router.get(), this->database, this->logger,
       validator.get(), this);
-
   registerController = std::make_unique<RegisterController>(
       registerModel.get(), registerView, router.get(), this->logger,
       validator.get());
+  homeController =
+      std::make_unique<HomeController>(homeView, homeModel.get(), router.get());
+  userPageController = std::make_unique<UserPageController>(
+      userPageView, userPageModel.get(), router.get(), validator.get());
 
   router->add("login", loginView);
   router->add("register", registerView);
+  router->add("home", homeView);
+  router->add("userPage", userPageView);
 
+  loginView->Hide();
   registerView->Hide();
+  homeView->Hide();
+  userPageView->Hide();
 
   containerSizer = new wxBoxSizer(wxVERTICAL);
   containerSizer->Add(loginView, 1, wxEXPAND);
   containerSizer->Add(registerView, 1, wxEXPAND);
+  containerSizer->Add(homeView, 1, wxEXPAND);
+  containerSizer->Add(userPageView, 1, wxEXPAND);
   container->SetSizer(containerSizer);
 
   wxBoxSizer *frameSizer = new wxBoxSizer(wxVERTICAL);
@@ -63,7 +76,7 @@ MainView::MainView(Logger *logger, Database *database)
   this->Update();
 }
 
-void MainView::initViews() {
+/*void MainView::initViews() {
     logger->log(LogLevel::Debug, "initViews: start");
   homeModel = std::make_unique<HomeModel>(database, logger);
     logger->log(LogLevel::Debug, "initViews: homeModel created");
@@ -98,6 +111,6 @@ void MainView::initViews() {
 
   router->navigate("home");
     logger->log(LogLevel::Debug, "initViews: navigated home");
-}
+} */
 
 MainView::~MainView() = default;

@@ -3,6 +3,8 @@
 
 #include "../include/classes/IRefreshable.hpp"
 #include "../include/view/VehicleCarouselWidget.hpp"
+#include "../classes/Router.hpp"
+#include "../model/HomeModel.hpp"
 #include <wx/wx.h>
 
 class Router;
@@ -12,13 +14,15 @@ class Logger;
 class HomeView : public wxPanel, public IRefreshable {
 private:
   Router *router;
+  HomeModel *model;
   VehicleCarouselWidget *carousel;
 
 public:
   wxButton *logoutBtn;
   wxButton *userPageBtn;
+  wxStaticText *accountBalanceLabel;
 
-  HomeView(wxWindow *window, Router *router, Database *database,
+  HomeView(wxWindow *window, Router *router, HomeModel *model, Database *database,
            Logger *logger);
 
   void change();

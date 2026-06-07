@@ -1,15 +1,15 @@
 #include "../../include/classes/User.hpp"
 
 User::User(int userId, std::string name, std::string surname, std::string email,
-           std::string password, bool isAdmin, int accountBalance)
+           std::string password, bool isAdmin)
     : userId(userId), name(name), surname(surname), email(email),
-      password(password), isAdmin(isAdmin), accountBalance(accountBalance) {}
+      password(password), isAdmin(isAdmin), accountBalance(14200) {}
 
 User::User(std::string name, std::string surname, std::string email,
-           std::string password, int accountBalance)
-    : name(name), surname(surname), email(email), password(password), accountBalance(accountBalance) {}
+           std::string password)
+    : name(name), surname(surname), email(email), password(password), accountBalance(14200) {}
 
-User::User() {};
+User::User() : userId(-1), isAdmin(false), accountBalance(14200) {}
 
 User::~User() {}
 

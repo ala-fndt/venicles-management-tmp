@@ -17,8 +17,6 @@ private:
   LoginModel *_model;
   LoginView *_view;
 
-  bool viewsInitialized = false;
-
   void OnSubmitClicked(wxCommandEvent &event);
   void OnRegisterClicked(wxCommandEvent &event);
 
