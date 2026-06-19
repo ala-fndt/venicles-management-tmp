@@ -51,12 +51,6 @@ Obsługiwane typy pojazdów:
 - **Motocykl** (`Motorcycle`)
 - **Ciężarówka** (`Truck`)
 
-<details>
-<summary>📸 Zrzuty ekranu — lista pojazdów</summary>
-
-> *(dodaj zrzuty ekranu)*
-
-</details>
 
 ### 🗄️ Baza danych
 - Lokalna baza SQLite inicjalizowana przy starcie aplikacji
